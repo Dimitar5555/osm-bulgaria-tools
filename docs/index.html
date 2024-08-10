@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% include project_name %}</title>
+	<script src="app.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<base href="/osm-bulgaria-tools/">
+</head>
+<body>
+	{% include components/header.html %}
+	<div class="container mx-auto">
+		<div class="max-w-sm rounded overflow-hidden shadow-lg">
+                <div class="px-6 py-4">
+                    <a href="atp-data-sync/"><div class="font-bold text-xl mb-2">Интеграция на данни от AllThePlaces</div></a>
+                    <p class="text-base">
+                        Инструмент за сравнение на данните в OpenStreetMap и на данните от AllThePlaces.
+                    </p>
+                </div>
+          </div>
+	</div>
+</body>
+</html>
