@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Интеграция на данни от AllThePlaces - Отворени данни България</title>
+	<script src="app.js"></script>
+	<!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+-->
+	<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="/assets/vendor/js/leaflet.js"></script>
+	<script src="/assets/vendor/js/leaflet.markercluster.js"></script>
+	<script src="/assets/vendor/js/leaflet.featuregroup.subgroup.js"></script>
+	<link rel="stylesheet" href="/assets/vendor/css/style.css">
+	<link rel="stylesheet" href="/assets/vendor/css/leaflet.css">
+	<link rel="stylesheet" href="/assets/vendor/css/MarkerCluster.Default.css">
+	<style>
+		#map {
+			height: 750px;
+		}
+		.marker-cluster {
+			color: black;
+		}
+		textarea {
+			white-space: pre-wrap !important;
+		}
+	</style>
+	<base href="/atp-data-sync/">
+</head>
+<body>
+	{% include components/header.html %}
+	<div class="container mx-auto">
+		<div class="grid grid-cols-12">
+			<div class="col-span-5">
+				<table class="table table-bordered table-sm">
+				<thead>
+					<tr>
+						<th>Име / Таг</th>
+						<th>Обекти в ATP</th>
+						<th>Обекти в OSM</th>
+						<th>Обекти с несъвпадащи тагове</th>
+					</tr>
+				</thead>
+				<tbody id="overview"></tbody>
+			</table>
+			</div>
+			<div class="col-span-7">
+				<div id="map" class="hidden"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
