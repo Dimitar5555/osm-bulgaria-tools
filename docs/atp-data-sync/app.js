@@ -206,19 +206,19 @@ function createHTMLElement(tag, options={}, children=[]){
 function init_map() {
 	icons = {
 		green: L.icon({
-			iconUrl: '/assets/images/marker-icon-green.png',
+			iconUrl: '/../assets/images/marker-icon-green.png',
 			iconSize: [25, 41],
 			iconAnchor: [12, 41],
 			popupAnchor: [1, -34]
 		}),
 		orange: L.icon({
-			iconUrl: '/assets/images/marker-icon-orange.png',
+			iconUrl: '/../assets/images/marker-icon-orange.png',
 			iconSize: [25, 41],
 			iconAnchor: [12, 41],
 			popupAnchor: [1, -34]
 		}),
 		red: L.icon({
-			iconUrl: '/assets/images/marker-icon-red.png',
+			iconUrl: '/../assets/images/marker-icon-red.png',
 			iconSize: [25, 41],
 			iconAnchor: [12, 41],
 			popupAnchor: [1, -34]
