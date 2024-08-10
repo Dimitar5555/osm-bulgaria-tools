@@ -267,7 +267,7 @@ function load_data(){
 
 		return btn;
 	}*/
-    fetch('data/metadata.json')
+    custom_fetch('data/metadata.json')
     .then(res => res.json())
 	.then(data => data.sort((a, b) => a.spider.localeCompare(b.spider) || a.key.localeCompare(b.key)  || a.value.localeCompare(b.value)))
 	.then(spiders => {
@@ -325,8 +325,7 @@ function generate_tags_box(check_tags, atp_tags, osm_tags={}) {
 }
 
 function show_spider_data(spider_name) {
-	//fetch master
-    fetch('data/metadata.json')
+    custom_fetch('data/metadata.json')
     .then(res => res.json())
 	.then(spiders => spiders.filter(spider => spider.spider === spider_name))
 	.then(async (spiders) => {
@@ -341,7 +340,7 @@ function show_spider_data(spider_name) {
 				last_category = `${points.metadata.key}=${points.metadata.value}`;
 				overview_table.appendChild(createHTMLElement('tr', {}, [createHTMLElement('th', {innerText: last_category, colspan: 5})]));
 			}*/
-			const locations_response = await fetch(`data/${spider.key}_${spider.value}_${spider.spider}.json`);
+			const locations_response = await custom_fetch(`data/${spider.key}_${spider.value}_${spider.spider}.json`);
 			const spider_data = (await locations_response.json());
 			const locations = spider_data.data;
 			let not_in_osm = [];
