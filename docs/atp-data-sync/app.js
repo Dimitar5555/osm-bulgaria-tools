@@ -203,34 +203,6 @@ function createHTMLElement(tag, options={}, children=[]){
 	return result;
 }*/
 
-function init_map() {
-	icons = {
-		green: L.icon({
-			iconUrl: 'assets/images/marker-icon-green.png',
-			iconSize: [25, 41],
-			iconAnchor: [12, 41],
-			popupAnchor: [1, -34]
-		}),
-		orange: L.icon({
-			iconUrl: 'assets/images/marker-icon-orange.png',
-			iconSize: [25, 41],
-			iconAnchor: [12, 41],
-			popupAnchor: [1, -34]
-		}),
-		red: L.icon({
-			iconUrl: 'assets/images/marker-icon-red.png',
-			iconSize: [25, 41],
-			iconAnchor: [12, 41],
-			popupAnchor: [1, -34]
-		})
-	};
-	map = L.map('map').setView([42.740, 25.450], 8);
-	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 19,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	}).addTo(map);
-}
-
 function load_data(){
 	/*function generate_tab_button(ul, id, text, count=0){
 		
@@ -356,7 +328,7 @@ function show_spider_data(spider_name) {
 				}
 				if(!location.osm) {
 					marker.bindPopup(generate_tags_box(spider_data.metadata.compare_keys, location.atp.tags, {}));
-					marker.setIcon(icons.green);
+					marker.setIcon(get_icon('green'));
 					not_in_osm.push(marker);
 				}
 				if(!location.atp) {
@@ -365,7 +337,7 @@ function show_spider_data(spider_name) {
 						generate_OSM_link(location.osm)
 					]);
 					marker.bindPopup(popup);
-					marker.setIcon(icons.red);
+					marker.setIcon(get_icon('red'));
 					not_in_atp.push(marker);
 				}
 				if(location.tags_mismatch && spider_data.metadata.compare_keys) {
@@ -374,7 +346,7 @@ function show_spider_data(spider_name) {
 						generate_OSM_link(location.osm)
 					]);
 					marker.bindPopup(popup);
-					marker.setIcon(icons.orange);
+					marker.setIcon(get_icon('orange'));
 					mismatched_tags.push(marker);
 				}
 			}
@@ -397,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	console.log(spider)
 	if(spider) {
 		document.querySelector('#map').classList.remove('hidden');
-		init_map();
+		map = init_map();
 		show_spider_data(spider);
 	}
 	else {	
