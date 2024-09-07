@@ -6,7 +6,7 @@ function custom_fetch(url, is_prod=false) {
 }
 
 function is_production() {
-    return location.href.includes('gituhb');
+    return location.href.includes('github');
 }
 
 function set_base_href() {
