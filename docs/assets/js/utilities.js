@@ -1,6 +1,6 @@
 function custom_fetch(url) {
     if(is_production()) {
-        url = `/osm-bulgaria-tools/${url}`;
+        url = `/osm-bulgaria-tools${url}`;
     }
     return fetch(url);
 }
