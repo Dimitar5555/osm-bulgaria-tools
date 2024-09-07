@@ -1,5 +1,5 @@
-function custom_fetch(url, is_prod=false) {
-    if(is_prod) {
+function custom_fetch(url) {
+    if(is_production()) {
         url = `/osm-bulgaria-tools/${url}`;
     }
     return fetch(url);
@@ -16,6 +16,18 @@ function set_base_href() {
     }
 }
 window.onload = () => set_base_href();
+
+function update_dev_anchors() {
+    if(!is_production()) {
+        let a = document.querySelectorAll('a[href]');
+        a.forEach(entry => {
+            let href = entry.getAttribute('href');
+            if(href.includes('/osm-bulgaria-tools/')) {
+                entry.setAttribute('href', href.replace('/osm-bulgaria-tools/', '/'));
+            }
+        })
+    }
+}
 
 function get_url_base() {
     if(is_production()) {
