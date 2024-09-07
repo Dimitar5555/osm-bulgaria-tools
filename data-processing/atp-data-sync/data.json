@@ -242,8 +242,15 @@
 				"fuzzy_coords": true,
 				"compare_keys": [
 					"phone",
-					"opening_hours"
+					"opening_hours",
+					"fuel:*",
+					"self_service"
 				]
+			},
+			{
+				"key": "amenity",
+				"value": "charging_station",
+				"compare_keys": false
 			}
 		]
 	},
@@ -281,6 +288,21 @@
 				"value": "parcel_locker",
 				"compare_keys": [
 					"ref"
+				]
+			}
+		]
+	},
+	{
+		"name": "easybox",
+		"spider": "easybox_bg",
+		"wikidata": "Q114496224",
+		"type": "brand",
+		"items": [
+			{
+				"key": "amenity",
+				"value": "parcel_locker",
+				"compare_keys": [
+					"opening_hours"
 				]
 			}
 		]
@@ -485,7 +507,6 @@
         "spider": "cashterminal_bg",
         "wikidata": "Q115668697",
         "type": "brand",
-		"skip": true,
 		"items": [
 			{
 				"key": "amenity",
@@ -579,6 +600,86 @@
 				"value": "supermarket",
 				"compare_keys": [
 					"opening_hours"
+				]
+			}
+		]
+	},
+	{
+		"name": "Praktiker",
+		"spider": "praktiker_bg",
+		"wikidata": "Q110399491",
+		"type": "brand",
+		"skip": true,
+		"items": [
+			{
+				"key": "shop",
+				"value": "doityourself",
+				"compare_keys": [
+					"opening_hours"
+				]
+			}
+		]
+	},
+	{
+		"name": "Minimart",
+		"spider": "minimart_bg",
+		"wikidata": "Q119168386",
+		"type": "brand",
+		"skip": true,
+		"items": [
+			{
+				"key": "shop",
+				"value": "convenience",
+				"compare_keys": false
+			}
+		]
+	},
+	{
+		"name": "ОББ",
+		"spider": "ubb_bg",
+		"wikidata": "Q7887555",
+		"type": "brand",
+		"skip": true,
+		"items": [
+			{
+				"key": "amenity",
+				"value": "atm",
+				"compare_keys": [
+					"opening_hours",
+					"cash_in"
+				]
+			},
+			{
+				"key": "amenity",
+				"value": "bank",
+				"compare_keys": [
+					"opening_hours",
+					"phone"
+				]
+			}
+		]
+	},
+	{
+		"name": "ОББ*",
+		"spider": "ubb_bg",
+		"wikidata": "Q7283808",
+		"type": "brand",
+		"skip": true,
+		"items": [
+			{
+				"key": "amenity",
+				"value": "atm",
+				"compare_keys": [
+					"opening_hours",
+					"cash_in"
+				]
+			},
+			{
+				"key": "amenity",
+				"value": "bank",
+				"compare_keys": [
+					"opening_hours",
+					"phone"
 				]
 			}
 		]
