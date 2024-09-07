@@ -356,9 +356,9 @@ function show_spider_data(spider_name) {
 			let not_in_ato_sub = L.featureGroup.subGroup(cluster_group, not_in_atp).addTo(map);
 			let mismatched_tags_sub = L.featureGroup.subGroup(cluster_group, mismatched_tags).addTo(map);
 			
-			overlays[`${spider.key}=${spider.value}_not_in_osm_sub`] = not_in_osm_sub;
-			overlays[`${spider.key}=${spider.value}_not_in_ato_sub`] = not_in_ato_sub;
-			overlays[`${spider.key}=${spider.value}_mismatched_tags_sub`] = mismatched_tags_sub;
+			overlays[`${spider.key}=${spider.value} missing from OSM`] = not_in_osm_sub;
+			overlays[`${spider.key}=${spider.value} missing from ATP`] = not_in_ato_sub;
+			overlays[`${spider.key}=${spider.value} mismatched tags`] = mismatched_tags_sub;
 		}
 		L.control.layers([], overlays, {collapsed: true}).addTo(map);
 	})
