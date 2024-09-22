@@ -84,8 +84,19 @@ function generate_OSM_link(location) {
 		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
 		url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
 	}
-	return createHTMLElement('a', {innerText: 'OSM', href: url, target: '_blank'});
-	
+	return createHTMLElement('a', {innerText: 'OSM', href: url, target: '_blank'});	
+}
+
+function generate_iD_link(location) {
+	let url;
+	if(location.type && location.id) {
+		url = `https://www.openstreetmap.org/edit?${location.type}=${location.id}`
+	}
+	else {
+		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
+		url = `https://www.openstreetmap.org/edit#map=18/${lat}/${lon}`;
+	}
+	return createHTMLElement('a', {innerText: 'iD', href: url, target: '_blank'});	
 }
 
 /*function createDiv(id){
@@ -317,9 +328,9 @@ function generate_popup(atp, osm, compare_keys) {
 	else {
 		tags = generate_tags_box(compare_keys, atp.tags, osm.tags)
 	}
-	let anchor = generate_OSM_link(osm?osm:atp);
 	popup.appendChild(tags);
-	popup.appendChild(anchor);
+	popup.appendChild(generate_OSM_link(osm?osm:atp));
+	popup.appendChild(generate_iD_link(osm?osm:atp));
 	return popup;
 }
 
