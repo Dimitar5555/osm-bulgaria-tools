@@ -121,9 +121,7 @@
 				"value": "supermarket",
 				"compare_keys": [
 					"opening_hours",
-					"phone",
-					"addr:city",
-					"addr:postcode"
+					"phone"
 				]
 			}
 		]
