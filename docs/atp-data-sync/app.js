@@ -76,7 +76,16 @@ function createText(text){
 }*/
 
 function generate_OSM_link(location) {
-	return createHTMLElement('a', {innerText: 'OSM', href: `https://www.openstreetmap.org/${location.type}/${location.id}`, target: '_blank'});
+	let url;
+	if(location.type && location.id) {
+		url = `https://www.openstreetmap.org/${location.type}/${location.id}`
+	}
+	else {
+		const [lon, lat] = location.coordinates;
+		url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lon}/${lat}`;
+	}
+	return createHTMLElement('a', {innerText: 'OSM', href: url, target: '_blank'});
+	
 }
 
 /*function createDiv(id){
@@ -296,6 +305,24 @@ function generate_tags_box(check_tags, atp_tags, osm_tags={}) {
 	return textarea;
 }
 
+function generate_popup(atp, osm, compare_keys) {
+	let popup = document.createElement('div');
+	let tags;
+	if(atp && !osm) {
+		tags = generate_tags_box(compare_keys, atp.tags, {})
+	}
+	else if(!atp && osm) {
+		tags = generate_tags_box(compare_keys, {}, osm.tags)
+	}
+	else {
+		tags = generate_tags_box(compare_keys, atp.tags, osm.tags)
+	}
+	let anchor = generate_OSM_link(osm?osm:atp);
+	popup.appendChild(tags);
+	popup.appendChild(anchor);
+	return popup;
+}
+
 function show_spider_data(spider_name) {
     custom_fetch('/atp-data-sync/data/metadata.json')
     .then(res => res.json())
@@ -327,28 +354,19 @@ function show_spider_data(spider_name) {
 					location.atp.tags[spider_data.metadata.type] = spider_data.metadata.name;
 				}
 				if(!location.osm) {
-					marker.bindPopup(generate_tags_box(spider_data.metadata.compare_keys, location.atp.tags, {}));
 					marker.setIcon(get_icon('green'));
 					not_in_osm.push(marker);
 				}
 				if(!location.atp) {
-					let popup = createHTMLElement('div', {}, [
-						//generate_tags_box(spider, location.atp.tags),
-						generate_OSM_link(location.osm)
-					]);
-					marker.bindPopup(popup);
 					marker.setIcon(get_icon('red'));
 					not_in_atp.push(marker);
 				}
 				if(location.tags_mismatch && spider_data.metadata.compare_keys) {
-					let popup = createHTMLElement('div', {}, [
-						generate_tags_box(spider_data.metadata.compare_keys, location.atp.tags, location.osm.tags),
-						generate_OSM_link(location.osm)
-					]);
-					marker.bindPopup(popup);
 					marker.setIcon(get_icon('orange'));
 					mismatched_tags.push(marker);
 				}
+				let popup = generate_popup(location.atp, location.osm, spider_data.metadata.compare_keys);
+				marker.bindPopup(popup);
 			}
 			console.log(spider, spiders)
 			console.log(not_in_osm, not_in_atp, mismatched_tags);
