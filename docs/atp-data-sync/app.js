@@ -304,9 +304,9 @@ function populate_overview_table(spiders, by_category=false) {
 	}
 }
 
-function generate_tags_box(check_tags, atp_tags, osm_tags={}) {
+function generate_tags_box(spider_type, check_tags, atp_tags, osm_tags={}) {
 	let textarea = createHTMLElement('textarea', {class: 'bg-white resize-none border-2', disabled: true, rows: 5});
-	let key_value_pairs = ['brand', 'brand:wikidata', 'operator', 'operator:wikidata']
+	let key_value_pairs = [spider_type, `${spider_type}:wikidata`]
 	.concat(check_tags)
 	.filter(key => atp_tags[key])
 	.filter(key => atp_tags[key] != osm_tags[key])
@@ -316,17 +316,17 @@ function generate_tags_box(check_tags, atp_tags, osm_tags={}) {
 	return textarea;
 }
 
-function generate_popup(atp, osm, compare_keys) {
+function generate_popup(spider_type, atp, osm, compare_keys) {
 	let popup = document.createElement('div');
 	let tags;
 	if(atp && !osm) {
-		tags = generate_tags_box(compare_keys, atp.tags, {})
+		tags = generate_tags_box(spider_type, compare_keys, atp.tags, {})
 	}
 	else if(!atp && osm) {
-		tags = generate_tags_box(compare_keys, {}, osm.tags)
+		tags = generate_tags_box(spider_type, compare_keys, {}, osm.tags)
 	}
 	else {
-		tags = generate_tags_box(compare_keys, atp.tags, osm.tags)
+		tags = generate_tags_box(spider_type, compare_keys, atp.tags, osm.tags)
 	}
 	popup.appendChild(tags);
 	popup.appendChild(generate_OSM_link(osm?osm:atp));
@@ -376,7 +376,7 @@ function show_spider_data(spider_name) {
 					marker.setIcon(get_icon('orange'));
 					mismatched_tags.push(marker);
 				}
-				let popup = generate_popup(location.atp, location.osm, spider_data.metadata.compare_keys);
+				let popup = generate_popup(spider_data.metadata.type, location.atp, location.osm, spider_data.metadata.compare_keys);
 				marker.bindPopup(popup);
 			}
 			console.log(spider, spiders)
