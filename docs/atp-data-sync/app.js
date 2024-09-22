@@ -84,7 +84,7 @@ function generate_OSM_link(location) {
 		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
 		url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
 	}
-	return createHTMLElement('a', {innerText: 'OSM', href: url, target: '_blank'});	
+	return createHTMLElement('a', {innerText: 'OSM', href: url, target: '_blank', class: 'btn', role: 'button'});	
 }
 
 function generate_iD_link(location) {
@@ -96,7 +96,7 @@ function generate_iD_link(location) {
 		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
 		url = `https://www.openstreetmap.org/edit#map=18/${lat}/${lon}`;
 	}
-	return createHTMLElement('a', {innerText: 'iD', href: url, target: '_blank'});	
+	return createHTMLElement('a', {innerText: 'iD', href: url, target: '_blank', class: 'btn', role: 'button'});	
 }
 
 /*function createDiv(id){
@@ -316,7 +316,8 @@ function generate_tags_box(spider_type, check_tags, atp_tags, osm_tags={}) {
 	return textarea;
 }
 
-function generate_popup(spider_type, atp, osm, compare_keys) {
+function generate_popup(spider_type, location, compare_keys) {
+	let {atp, osm} = location;
 	let popup = document.createElement('div');
 	let tags;
 	if(atp && !osm) {
@@ -331,6 +332,8 @@ function generate_popup(spider_type, atp, osm, compare_keys) {
 	popup.appendChild(tags);
 	popup.appendChild(generate_OSM_link(osm?osm:atp));
 	popup.appendChild(generate_iD_link(osm?osm:atp));
+	popup.appendChild(createHTMLElement('br'));
+	popup.appendChild(document.createTextNode(`Разстояние: ${location.dist.toFixed(2)} метра`))
 	return popup;
 }
 
@@ -376,7 +379,7 @@ function show_spider_data(spider_name) {
 					marker.setIcon(get_icon('orange'));
 					mismatched_tags.push(marker);
 				}
-				let popup = generate_popup(spider_data.metadata.type, location.atp, location.osm, spider_data.metadata.compare_keys);
+				let popup = generate_popup(spider_data.metadata.type, location, spider_data.metadata.compare_keys);
 				marker.bindPopup(popup);
 			}
 			console.log(spider, spiders)
