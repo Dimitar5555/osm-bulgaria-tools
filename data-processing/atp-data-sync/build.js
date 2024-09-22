@@ -1,56 +1,41 @@
 import fs from 'fs';
-import { fetch_configs } from '../global/utilities.js';
+import { fetch_configs, fetch_data_from_overpass_turbo } from '../global/utilities.js';
 import path, {dirname} from 'path';
-import {preprocess_atp_data, preprocess_osm_data, distance, drop_tags, are_tags_mismatched} from './utilities.js';
+import {preprocess_atp_data, preprocess_osm_data, distance, drop_tags, are_tags_mismatched, calc_bbox} from './utilities.js';
 
 const local_path = path.resolve(dirname('../'))+'/data-processing/atp-data-sync';
 const configs = fetch_configs(local_path);
 
-const brands = JSON.parse(fs.readFileSync(`${local_path}/data.json`))
-.filter(brand => !brand.skip);
+const spiders = JSON.parse(fs.readFileSync(`${local_path}/data.json`))
+.filter(spider => !spider.skip);
 const alltheplaces_runs = `${configs.atp_url}/runs/history.json`;
 
 async function fetch_json(url, options){
 	var result = await fetch(url, options);
 	return result.json();
 }
-async function fetch_atp_data(run, spider){
-	var data = await fetch_json(`${configs.atp_url}/runs/${run}/output/${spider}.geojson`);
+async function fetch_atp_data(spider, run){
+	// let data = await fetch_json(`${configs.atp_url}/runs/latest/output/${spider}.geojson`);
+	let data = await fetch_json(`${configs.atp_url}/runs/${run}/output/${spider}.geojson`);
 	return preprocess_atp_data(data, configs);
-}
-function calc_bbox(coordinates, dist){
-	//const dist = 1 * configs.max_distance;
-	const degree_in_meters = 111111;
-	return [[
-		coordinates[0]-dist/degree_in_meters,
-		coordinates[1]-dist/(Math.cos(coordinates[0]*Math.PI)*degree_in_meters),
-	], [
-		coordinates[0]+dist/degree_in_meters,
-		coordinates[1]+dist/(Math.cos(coordinates[0]*Math.PI)*degree_in_meters)
-	]];
 }
 async function fetch_all_osm_data(wikidata_items, retry=false) {
 	const formatted_selectors = wikidata_items.map(item => `nwr[${item.tag}]["${item.type?item.type:'brand'}:wikidata"="${item.wikidata}"](area.searchArea);`).join('');
-	const query = `data=[out:json][timeout:25];area(id:${configs.area_id})->.searchArea;(${formatted_selectors});out center;`;
-	const url_data = decodeURIComponent(query);
+	const query = `(${formatted_selectors});out center;`;
 	console.log('Quering Overpass Turbo');
 	
-	var to_return = await fetch_json(configs.overpass_instance, {method: "POST", body: url_data});
-	if(to_return.elements.length==0 && retry==false){
+	var to_return = await fetch_data_from_overpass_turbo(query, true);
+	if(to_return.length==0 && retry==false){
 		console.error('ovepass returned empty result set, retrying');
 		var temp = await fetch_all_osm_data(wikidata_items, true);
-		if(temp.elements.length!=0){
+		if(temp.length!=0){
 			to_return = temp;
 		}
 		console.error('empty result again, terminating');
 		process.exit(1);
 	}
 	preprocess_osm_data(to_return);
-	return to_return.elements;
-}
-
-function valid_point(atp_point, key, value){
-	return atp_point.tags && atp_point.tags[key] == value && atp_point.coordinates;
+	return to_return;
 }
 
 function match_atp_to_osm(osm, atp_points, max_distance=false){
@@ -81,9 +66,6 @@ function process(shop, osm_points, atp_points){
 	osm_points.forEach((osm) => {
 		const match = match_atp_to_osm(osm, atp_points, max_distance);
 
-		//const bbox = calc_bbox(osm.coordinates, max_distance);
-		//const distances = atp_points.map(atp=>valid_point(atp, shop.key, shop.value)?distance(atp.coordinates, osm.coordinates, bbox):Infinity);
-		//const closest_index = distances.indexOf(Math.min(...(distances)));
 		var temp = {osm: drop_tags(osm), atp: false};
 
 		if(match.index != -1){
@@ -95,6 +77,7 @@ function process(shop, osm_points, atp_points){
 		}
 		result.push(temp);
 	});
+	// match anything left, if fuzzy coords
 	if(shop.fuzzy_coords){
 		result.forEach((row, index) => {
 			if(!row.atp && atp_points.length>0){
@@ -106,6 +89,7 @@ function process(shop, osm_points, atp_points){
 			}
 		});
 	}
+	
 	result.forEach(row => {
 		if(!row.osm || !row.atp){
 			row.tags_mismatch = false;
@@ -140,7 +124,7 @@ function process(shop, osm_points, atp_points){
 	}
 }
 async function start(){
-	let brands_data = brands.map(brand => {
+	let brands_data = spiders.map(brand => {
 		return brand.items.map(item => {
 			return ({
 				wikidata: brand.wikidata,
@@ -164,7 +148,7 @@ async function start(){
 			console.log(`Starting ${brand.spider}`);
 			var osm_points = osm_data.filter(item => item.wikidata === brand.wikidata && item.tags[brand.key] === brand.value);
 			if(!atp_cache[brand.spider]){
-				let temp = await fetch_atp_data(last_run, brand.spider);
+				let temp = await fetch_atp_data(brand.spider, last_run);
 				atp_cache[brand.spider] = temp;
 			}
 			var atp_points = atp_cache[brand.spider]
