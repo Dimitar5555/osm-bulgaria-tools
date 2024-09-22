@@ -82,7 +82,7 @@ function generate_OSM_link(location) {
 	}
 	else {
 		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
-		url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lon}/${lat}`;
+		url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
 	}
 	return createHTMLElement('a', {innerText: 'OSM', href: url, target: '_blank'});
 	
