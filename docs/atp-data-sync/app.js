@@ -46,7 +46,7 @@ function createTable(parent, items, spider_data, type, options=false) {
 	parent.classList.add('pt-2')
 }
 
-/*function createLink(url, text, newTab=true){
+function create_anchor(url, text, newTab=true){
 	var a = document.createElement('a');
 	a.innerText = text;
 	a.setAttribute('href', url);
@@ -58,22 +58,7 @@ function createTable(parent, items, spider_data, type, options=false) {
 
 function createText(text){
 	return document.createTextNode(text);
-}*/
-
-/*function generateOSMlinks(data){
-	var res = [];
-	if(Array.isArray(data)){
-		res.push(createLink(`https://www.openstreetmap.org/#map=19/${data[0]}/${data[1]}`, 'OSM'));
-	}
-	else{
-		res.push(createLink(`https://www.openstreetmap.org/${data.type}/${data.id}`, 'OSM'));
-		res.push(createText(' '));
-		res.push(createLink(`https://www.openstreetmap.org/${data.type}/${data.id}`, 'iD'));
-		res.push(createText(' '));
-		res.push(createLink(`https://www.openstreetmap.org/${data.type}/${data.id}`, 'JOSM'));
-	}
-	return res;
-}*/
+}
 
 function generate_OSM_link(location) {
 	let url;
@@ -84,7 +69,10 @@ function generate_OSM_link(location) {
 		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
 		url = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
 	}
-	return createHTMLElement('a', {innerText: 'OSM', href: url, target: '_blank', class: 'btn', role: 'button'});	
+	let anchor = create_anchor(url, 'OSM', true);
+	anchor.classList.add('btn', 'btn-join');
+	anchor.classList.setAttribute('role', 'button');
+	return anchor;
 }
 
 function generate_iD_link(location) {
@@ -96,17 +84,11 @@ function generate_iD_link(location) {
 		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
 		url = `https://www.openstreetmap.org/edit#map=18/${lat}/${lon}`;
 	}
-	return createHTMLElement('a', {innerText: 'iD', href: url, target: '_blank', class: 'btn', role: 'button'});	
+	let anchor = create_anchor(url, 'iD', true);
+	anchor.classList.add('btn', 'btn-join');
+	anchor.classList.setAttribute('role', 'button');
+	return anchor;
 }
-
-/*function createDiv(id){
-	if(!document.querySelector(`#${id}`)){
-		var div = document.createElement('div');
-		div.setAttribute('id', id);
-		document.querySelector('#panes').appendChild(div);
-	}
-	return document.querySelector(`#${id}`);
-}*/
 
 function createHTMLElement(tag, options={}, children=[]){
 	var res = document.createElement(tag);
@@ -124,21 +106,6 @@ function createHTMLElement(tag, options={}, children=[]){
 	children.forEach(child => res.appendChild(child));
 	return res;
 }
-
-/*function generateTagsBox(tags){
-	var tags = tags.filter(a => a[1]!=undefined).sort((a, b)=>a[0]>b[0]);
-	console.log(tags.map(tag => tag[0] + ' = ' + tag[1]))
-	var textarea = createHTMLElement('textarea', {
-		value: tags.map(tag => tag[0] + ' = ' + tag[1]).join('\n'),
-		class: 'form-control',
-		cols: 30,
-		rows: 4,
-		readonly: 'true',
-		onfocus: 'document.execCommand("copy");',
-		oncopy: 'event.preventDefault();if (event.clipboardData) {event.clipboardData.setData("text/plain", `\n${this.value}`);}'
-	});
-	return [textarea];
-}*/
 
 //type:
 //missing_OSM
@@ -330,10 +297,15 @@ function generate_popup(spider_type, location, compare_keys) {
 		tags = generate_tags_box(spider_type, compare_keys, atp.tags, osm.tags)
 	}
 	popup.appendChild(tags);
-	popup.appendChild(generate_OSM_link(osm?osm:atp));
-	popup.appendChild(generate_iD_link(osm?osm:atp));
-	popup.appendChild(createHTMLElement('br'));
-	popup.appendChild(document.createTextNode(`Разстояние: ${location.dist.toFixed(2)} метра`))
+	popup.appendChild(document.createElement('br'));
+	let btn_group = createHTMLElement('div', {class: 'join'}, [
+		generate_OSM_link(osm?osm:atp),
+		generate_iD_link(osm?osm:atp)
+	]);
+	popup.appendChild(btn_group);
+	if(location.dist) {	
+		popup.appendChild(document.createTextNode(`Разстояние: ${location.dist.toFixed(2)} метра`))
+	}
 	return popup;
 }
 
