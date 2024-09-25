@@ -71,7 +71,7 @@ function generate_OSM_link(location) {
 	}
 	let anchor = create_anchor(url, 'OSM', true);
 	anchor.classList.add('btn', 'btn-join');
-	anchor.classList.setAttribute('role', 'button');
+	anchor.setAttribute('role', 'button');
 	return anchor;
 }
 
@@ -86,7 +86,7 @@ function generate_iD_link(location) {
 	}
 	let anchor = create_anchor(url, 'iD', true);
 	anchor.classList.add('btn', 'btn-join');
-	anchor.classList.setAttribute('role', 'button');
+	anchor.setAttribute('role', 'button');
 	return anchor;
 }
 
