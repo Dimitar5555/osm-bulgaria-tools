@@ -566,7 +566,6 @@
         "spider": "econt_bg",
         "wikidata": "Q12279603",
         "type": false,
-		"skip": true,
 		"items": [
 			{
 				"key": "amenity",
