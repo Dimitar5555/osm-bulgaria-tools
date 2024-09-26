@@ -581,7 +581,9 @@
 				"compare_keys": [
 					"opening_hours",
 					"phone",
-					"email"
+					"email",
+					"name",
+					"branch"
 				],
 				"type": "operator"
 			}
