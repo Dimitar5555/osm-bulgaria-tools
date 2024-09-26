@@ -582,7 +582,6 @@
 					"opening_hours",
 					"phone",
 					"email",
-					"name",
 					"branch"
 				],
 				"type": "operator"
