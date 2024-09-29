@@ -55,7 +55,6 @@
 				"compare_keys": [
 					"opening_hours",
 					"addr:city",
-					"addr:postcode",
 					"website",
 					"ref"
 				]
