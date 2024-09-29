@@ -7,7 +7,8 @@ const local_path = path.resolve(dirname('../'))+'/data-processing/atp-data-sync'
 const configs = fetch_configs(local_path);
 
 const spiders = JSON.parse(fs.readFileSync(`${local_path}/data.json`))
-.filter(spider => !spider.skip);
+.filter(spider => !spider.skip)
+.filter(spider => !configs.debug || configs.debug && configs.run_only.includes(spider.spider));
 const alltheplaces_runs = `${configs.atp_url}/runs/history.json`;
 
 async function fetch_json(url, options){
@@ -46,13 +47,13 @@ function match_atp_to_osm(osm, atp_points, max_distance=false){
 		distances = atp_points.map(atp=>distance(atp.coordinates, osm.coordinates, bbox));
 	}
 	else{
-		distances = atp_points.map(atp=>distance(atp.coordinates, row.osm.coordinates));
+		distances = atp_points.map(atp=>distance(atp.coordinates, osm.coordinates));
 	}
 	const closest_index = distances.indexOf(Math.min(...(distances)));
 	if(closest_index != -1 && (distances[closest_index] != Infinity || !max_distance)){
 		return {index: closest_index, distance: distances[closest_index]};
 	}
-	return -1;
+	return {index: -1};
 }
 
 function process(shop, osm_points, atp_points){
@@ -65,7 +66,6 @@ function process(shop, osm_points, atp_points){
 
 	osm_points.forEach((osm) => {
 		const match = match_atp_to_osm(osm, atp_points, max_distance);
-
 		var temp = {osm: drop_tags(osm), atp: false};
 
 		if(match.index != -1){
@@ -78,6 +78,7 @@ function process(shop, osm_points, atp_points){
 		result.push(temp);
 	});
 	// match anything left, if fuzzy coords
+	console.log(shop);
 	if(shop.fuzzy_coords){
 		result.forEach((row, index) => {
 			if(!row.atp && atp_points.length>0){
@@ -112,10 +113,11 @@ function process(shop, osm_points, atp_points){
 		data: result.filter(a => a.osm === false || a.atp === false || a.tags_mismatch)
 	}));
 	return {
-		counts: {
+		stats: {
 			atp: total_ATP_points,
 			osm: total_OSM_points,
 			tags_mismatches: result.filter(row => row.tags_mismatch).length,
+			percent_atp_to_osm_matched: parseFloat((result.filter(row => row.atp && row.osm).length / total_ATP_points * 100).toFixed(1))
 		},
 		name: shop.name,
 		spider: shop.spider,
@@ -126,6 +128,7 @@ function process(shop, osm_points, atp_points){
 async function start(){
 	let brands_data = spiders.map(brand => {
 		return brand.items.map(item => {
+			item.fuzzy_coords ??= false;
 			return ({
 				wikidata: brand.wikidata,
 				type: brand.type?brand.type:item.type,
