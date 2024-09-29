@@ -256,9 +256,10 @@ function populate_overview_table(spiders, by_category=false) {
 		}
 		let tr = createHTMLElement('tr', {}, [
 			createHTMLElement('td'),
-			createHTMLElement('td', {innerText: spider.counts.atp}),
-			createHTMLElement('td', {innerText: spider.counts.osm}),
-			createHTMLElement('td', {innerText: spider.counts.tags_mismatches})
+			createHTMLElement('td', {innerText: spider.stats.atp}),
+			createHTMLElement('td', {innerText: spider.stats.osm}),
+			createHTMLElement('td', {innerText: spider.stats.tags_mismatches}),
+			createHTMLElement('td', {innerText: `${spider.stats.percent_atp_to_osm_matched}%`})
 		]);
 		if(by_category) {
 			tr.children[0].appendChild(generate_link(spider.spider, spider.name));
@@ -271,10 +272,9 @@ function populate_overview_table(spiders, by_category=false) {
 	}
 }
 
-function generate_tags_box(spider_type, check_tags, atp_tags, osm_tags={}) {
+function generate_tags_box(check_tags, atp_tags, osm_tags={}) {
 	let textarea = createHTMLElement('textarea', {class: 'bg-white resize-none border-2', disabled: true, rows: 5});
-	let key_value_pairs = [spider_type, `${spider_type}:wikidata`]
-	.concat(check_tags)
+	let key_value_pairs = check_tags
 	.filter(key => atp_tags[key])
 	.filter(key => atp_tags[key] != osm_tags[key])
 	.map(key => `${key}=${atp_tags[key]}`)
@@ -283,19 +283,20 @@ function generate_tags_box(spider_type, check_tags, atp_tags, osm_tags={}) {
 	return textarea;
 }
 
-function generate_popup(spider_type, location, compare_keys) {
+function generate_popup(spider, location, compare_keys) {
 	let {atp, osm} = location;
 	let popup = document.createElement('div');
 	let tags;
 	if(atp && !osm) {
-		tags = generate_tags_box(spider_type, compare_keys, atp.tags, {})
+		tags = generate_tags_box(compare_keys, atp.tags, {})
 	}
 	else if(!atp && osm) {
-		tags = generate_tags_box(spider_type, compare_keys, {}, osm.tags)
+		tags = generate_tags_box(compare_keys, {}, osm.tags)
 	}
 	else {
-		tags = generate_tags_box(spider_type, compare_keys, atp.tags, osm.tags)
+		tags = generate_tags_box(compare_keys, atp.tags, osm.tags)
 	}
+	popup.appendChild(document.createTextNode(`${spider.key}=${spider.value}`));
 	popup.appendChild(tags);
 	popup.appendChild(document.createElement('br'));
 	let btn_group = createHTMLElement('div', {class: 'join'}, [
@@ -351,7 +352,7 @@ function show_spider_data(spider_name) {
 					marker.setIcon(get_icon('orange'));
 					mismatched_tags.push(marker);
 				}
-				let popup = generate_popup(spider_data.metadata.type, location, spider_data.metadata.compare_keys);
+				let popup = generate_popup(spider, location, spider_data.metadata.compare_keys);
 				marker.bindPopup(popup);
 			}
 			console.log(spider, spiders)
