@@ -84,7 +84,7 @@ function process(shop, osm_points, atp_points){
 			if(!row.atp && atp_points.length>0){
 				//const distances = atp_points.map(atp=>valid_point(atp, item.key, item.value)?distance(atp.coordinates, row.osm.coordinates):+Infinity);
 				const match = match_atp_to_osm(row.osm, atp_points);
-				result[index].atp = drop_tags(atp_points.splice(match.index, 1), true)
+				result[index].atp = drop_tags(atp_points.splice(match.index, 1)[0], true)
 				result.fuzzy = true;
 				result.dist = match.distance;
 			}

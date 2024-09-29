@@ -274,6 +274,9 @@ function populate_overview_table(spiders, by_category=false) {
 
 function generate_tags_box(check_tags, atp_tags, osm_tags={}) {
 	let textarea = createHTMLElement('textarea', {class: 'bg-white resize-none border-2', disabled: true, rows: 5});
+	if(!check_tags) {
+		check_tags = [];
+	}
 	let key_value_pairs = check_tags
 	.filter(key => atp_tags[key])
 	.filter(key => atp_tags[key] != osm_tags[key])
@@ -337,6 +340,7 @@ function show_spider_data(spider_name) {
 				let marker = new L.marker(coordinates);
 				//.bindPopup(popup);
 				if(location.atp) {
+					console.log(location.atp)
 					location.atp.tags[`${spider_data.metadata.type}:wikidata`] = spider_data.metadata.wikidata;
 					location.atp.tags[spider_data.metadata.type] = spider_data.metadata.name;
 				}

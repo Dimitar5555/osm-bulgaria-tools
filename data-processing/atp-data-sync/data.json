@@ -9,9 +9,7 @@
 				"key": "shop",
 				"value": "supermarket",
 				"compare_keys": [
-					"opening_hours",
-					"addr:city",
-					"addr:postcode"
+					"opening_hours"
 				],
 				"drop_tags": [
 					"website"
@@ -36,9 +34,7 @@
 				"key": "amenity",
 				"value": "bank",
 				"compare_keys": [
-					"opening_hours",
-					"addr:city",
-					"addr:postcode"
+					"opening_hours"
 				]
 			}
 		]
@@ -54,7 +50,6 @@
 				"value": "supermarket",
 				"compare_keys": [
 					"opening_hours",
-					"addr:city",
 					"website",
 					"ref"
 				]
@@ -102,9 +97,7 @@
 				"compare_keys": [
 					"opening_hours",
 					"phone",
-					"website",
-					"addr:city",
-					"addr:postcode"
+					"website"
 				]
 			}
 		]
@@ -261,8 +254,6 @@
 				"key": "amenity",
 				"value": "fuel",
 				"compare_keys": [
-					"addr:city",
-					"addr:postcode",
 					"phone",
 					"opening_hours",
 					"car_wash",
@@ -456,12 +447,7 @@
 				"value": "furniture",
 				"compare_keys": [
 					"website",
-					"opening_hours",
-					"addr:city",
-					"addr:postcode",
-					"addr:housenumber",
-					"addr:street",
-					"ref"
+					"opening_hours"
 				]
 			}
 		]
