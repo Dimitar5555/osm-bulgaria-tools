@@ -1,6 +1,6 @@
 export function preprocess_atp_data(data, configs) {
     data.features = data.features
-	.filter(feature => feature.geometry && configs.allowed_countries.indexOf(feature.properties['addr:country']) != -1);
+	.filter(feature => feature.geometry && configs.allowed_countries.includes(feature.properties['addr:country']));
 	data.features.forEach(item => {
 		item.tags = item.properties;
         delete item.properties;
@@ -16,10 +16,16 @@ export function preprocess_atp_data(data, configs) {
 }
 
 export function distance(a, b, bbox=false) {
-	if(bbox){
-		var lat_in_bbox = a[0]>=Math.min(bbox[0][0], bbox[1][0]) && a[0]<=Math.max(bbox[0][0], bbox[1][0]);
-		var lon_in_bbox = a[1]>=Math.min(bbox[0][1], bbox[1][1]) && a[1]<=Math.max(bbox[0][1], bbox[1][1]);
-		if(!lat_in_bbox || !lon_in_bbox){
+	if(bbox) {
+		const lb_lat = Math.min(bbox[0][0], bbox[1][0]);
+		const rb_lat = Math.max(bbox[0][0], bbox[1][0]);
+		const is_lat_in_bbox = lb_lat <= a[0] && a[0] <= rb_lat;
+		
+		const lb_lon = Math.min(bbox[0][1], bbox[1][1]);
+		const rb_lon = Math.max(bbox[0][1], bbox[1][1]);
+		const is_lon_in_bbox = lb_lon <= a[1] && a[1] <= rb_lon;
+		
+		if(!is_lat_in_bbox || !is_lon_in_bbox) {
 			return +Infinity;
 		}
 	}
