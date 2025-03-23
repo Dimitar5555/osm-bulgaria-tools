@@ -64,34 +64,31 @@ function createText(text){
 	return document.createTextNode(text);
 }
 
-function generate_OSM_link(location) {
-	let url = 'https://www.openstreetmap.org/';
+function generate_popup_buttons(location, group) {
+	let map_url = 'https://www.openstreetmap.org/';
+	let edit_url = 'https://www.openstreetmap.org/edit';
 	if(location.type && location.id) {
-		url += `${location.type}/${location.id}`
+		map_url += `${location.type}/${location.id}`
+		edit_url += `?${location.type}=${location.id}`
 	}
 	else {
 		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
-		url += `?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
+		map_url += `?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
+		edit_url += `#map=18/${lat}/${lon}`;
 	}
-	const anchor = create_anchor(url, 'OSM', true);
-	anchor.classList.add('btn', 'btn-outline-primary');
-	anchor.setAttribute('role', 'button');
-	return anchor;
-}
 
-function generate_iD_link(location) {
-	let url = 'https://www.openstreetmap.org/edit';
-	if(location.type && location.id) {
-		url += `?${location.type}=${location.id}`
+	{
+		const map_anchor = create_anchor(map_url, 'OSM', true);
+		map_anchor.classList.add('btn', 'btn-outline-primary');
+		map_anchor.setAttribute('role', 'button');
+		group.appendChild(map_anchor);
 	}
-	else {
-		const [lat, lon] = location.coordinates.map(number => number.toFixed(5));
-		url += `#map=18/${lat}/${lon}`;
+	{
+		const edit_anchor = create_anchor(edit_url, 'iD', true);
+		edit_anchor.classList.add('btn', 'btn-outline-primary');
+		edit_anchor.setAttribute('role', 'button');
+		group.appendChild(edit_anchor);
 	}
-	const anchor = create_anchor(url, 'iD', true);
-	anchor.classList.add('btn', 'btn-outline-primary');
-	anchor.setAttribute('role', 'button');
-	return anchor;
 }
 
 function createHTMLElement(tag, options={}, children=[]){
