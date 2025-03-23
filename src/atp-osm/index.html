@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Интеграция на данни от AllThePlaces - {% include project_name %}</title>
+	<link rel="stylesheet" href="/src/assets/scss/custom.scss">
+	<style>
+		#map {
+			height: 750px;
+		}
+		.marker-cluster {
+			color: black;
+		}
+		textarea {
+			white-space: pre-wrap !important;
+		}
+	</style>
+</head>
+<body>
+    <include src="./src/_includes/nav.html" type="module"></include>
+	<div class="container mx-auto">
+		<div class="row">
+			<div class="col-5">
+				<table class="table table-bordered table-sm">
+					<thead>
+						<tr>
+							<th id="table_title" colspan="5" class="text-center"></th>
+						</tr>
+						<tr>
+							<th>Име / Таг</th>
+							<th>Обекти в ATP</th>
+							<th>Обекти в OSM</th>
+							<th>Обекти с несъвпадащи тагове</th>
+						</tr>
+					</thead>
+					<tbody id="overview"></tbody>
+				</table>
+			</div>
+			<div class="col-7">
+				<div id="map"></div>
+			</div>
+		</div>
+	</div>
+	<script src="/src/assets/js/common.js" type="module"></script>
+	<script src="/src/atp-osm/app.js" type="module"></script>
+</body>
+</html>
