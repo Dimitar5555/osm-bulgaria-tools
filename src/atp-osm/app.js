@@ -241,7 +241,7 @@ function load_data(){
 
 function populate_overview_table(spiders, by_category=false) {
 	function generate_link(spider_name, label) {
-		return createHTMLElement('a', {innerText: label, href: `?spider=${spider_name}`});
+		return createHTMLElement('a', {innerText: label, href: `./atp-osm/?spider=${spider_name}`});
 	}
 	const overview_table = document.querySelector('#overview');
 	if(by_category) {

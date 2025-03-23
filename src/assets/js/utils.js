@@ -13,8 +13,11 @@ export function get_url_base() {
     return '';
 }
 
+const base = document.createElement('base');
 if(is_production()) {
-    const base = document.createElement('base');
     base.href = 'https://dimitar5555.github.io/osm-bulgaria-tools/';
-    document.head.appendChild(base);
 }
+else {
+    base.href = '/';
+}
+document.head.appendChild(base);
