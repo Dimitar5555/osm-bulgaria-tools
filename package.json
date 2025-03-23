@@ -4,12 +4,24 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-atp-data-sync": "node ./data-processing/atp-data-sync/build.js",
-    "serve": "http-server ./docs/ -c-1 -o /"
+    "build-atp-osm": "node ./data-processing/atp-osm/build.js",
+    "serve": "http-server ./docs/ -c-1 -o /",
+    "start": "parcel ./src/index.html ./src/atp-osm/index.html ./src/atp-osm/data/* ./src/assets/images/*",
+    "build": "parcel build src/index.html"
   },
   "author": "",
   "dependencies": {
-    "http-server": "^14.1.1"
+    "bootstrap": "^5.3.3",
+    "http-server": "^14.1.1",
+    "leaflet": "^1.9.4",
+    "leaflet.featuregroup.subgroup": "^1.0.2",
+    "leaflet.markercluster": "^1.5.3"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@parcel/transformer-html": "^2.14.1",
+    "@parcel/transformer-sass": "^2.14.1",
+    "parcel": "^2.14.1",
+    "posthtml-include": "^2.0.1"
+  }
 }
