@@ -3,6 +3,9 @@
 
 name: Node.js CI
 
+permissions:
+  id-token: write
+
 on:
   push:
     branches: [ "master" ]
