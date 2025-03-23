@@ -1,15 +1,10 @@
 import fs from 'fs';
 import { fetch_configs, fetch_data_from_overpass_turbo } from '../global/utilities.js';
-import path, {dirname} from 'path';
-import {preprocess_atp_data, preprocess_osm_data, distance, drop_tags, are_tags_mismatched, calc_bbox} from './utilities.js';
+import path, { dirname } from 'path';
+import { preprocess_atp_data, preprocess_osm_data, distance, drop_tags, are_tags_mismatched, calc_bbox, generate_metadata } from './utilities.js';
 
-const local_path = path.resolve(dirname('../'))+'/data-processing/atp-data-sync';
+const local_path = path.resolve(dirname('../'))+'/data-processing/atp-osm';
 const configs = fetch_configs(local_path);
-
-const spiders = JSON.parse(fs.readFileSync(`${local_path}/data.json`))
-.filter(spider => !spider.skip)
-.filter(spider => !configs.debug || configs.debug && configs.run_only.includes(spider.spider));
-const alltheplaces_runs = `${configs.atp_url}/runs/history.json`;
 
 async function fetch_json(url, options){
 	var result = await fetch(url, options);
@@ -41,26 +36,23 @@ async function fetch_all_osm_data(wikidata_items, retry=false) {
 
 function match_atp_to_osm(osm, atp_points, max_distance=false){
 	// when max distance is false, use fuzzy search
-	var distances;
+	let distances;
 	if(max_distance){
 		const bbox = calc_bbox(osm.coordinates, max_distance);
-		distances = atp_points.map(atp=>distance(atp.coordinates, osm.coordinates, bbox));
+		distances = atp_points.map(atp => distance(atp, osm, bbox));
 	}
 	else{
-		distances = atp_points.map(atp=>distance(atp.coordinates, osm.coordinates));
+		distances = atp_points.map(atp => distance(atp, osm));
 	}
 	const closest_index = distances.indexOf(Math.min(...(distances)));
-	if(closest_index != -1 && (distances[closest_index] != Infinity || !max_distance)){
+	if(closest_index != -1 && (distances[closest_index] != +Infinity || !max_distance)){
 		return {index: closest_index, distance: distances[closest_index]};
 	}
 	return {index: -1};
 }
 
 function process(shop, osm_points, atp_points){
-	const match_start_timestamp = new Date();
-	const total_ATP_points = atp_points.length;
-	const total_OSM_points = osm_points.length;
-	var result = [];
+	let result = [];
 
 	const max_distance = shop.max_distance?shop.max_distance:configs.max_distance;
 
@@ -70,7 +62,8 @@ function process(shop, osm_points, atp_points){
 
 		if(match.index != -1){
 			temp.dist = match.distance;
-			temp.atp = drop_tags(atp_points.splice(match.index, 1)[0], true);
+			temp.atp = drop_tags(atp_points[match.index]);
+			atp_points[match.index] = false;
 			if(temp.atp==[]){
 				temp.atp = false;
 			}
@@ -110,22 +103,18 @@ function process(shop, osm_points, atp_points){
 			name: shop.name,
 			compare_keys: shop.compare_keys
 		},
-		data: result.filter(a => a.osm === false || a.atp === false || a.tags_mismatch)
+		data: result
 	}));
-	return {
-		stats: {
-			atp: total_ATP_points,
-			osm: total_OSM_points,
-			tags_mismatches: result.filter(row => row.tags_mismatch).length,
-			percent_atp_to_osm_matched: parseFloat((result.filter(row => row.atp && row.osm).length / total_ATP_points * 100).toFixed(1))
-		},
-		name: shop.name,
-		spider: shop.spider,
-		key: shop.key,
-		value: shop.value,
-	}
+	return result;
 }
-async function start(){
+async function start() {
+	const spiders = JSON.parse(fs.readFileSync(`${local_path}/data.json`))
+	.filter(spider => !spider.skip)
+	.filter(spider => !configs.debug || configs.debug && configs.run_only.includes(spider.spider));
+
+	const alltheplaces_latest_run = `${configs.atp_url}/runs/latest.json`;
+	const last_run = (await fetch_json(alltheplaces_latest_run)).run_id;
+
 	let brands_data = spiders.map(brand => {
 		return brand.items.map(item => {
 			item.fuzzy_coords ??= false;
@@ -145,18 +134,26 @@ async function start(){
 	var osm_data = await fetch_all_osm_data(brands_data);
 	var atp_cache = {};
 	var stats = [];
-	const last_run = (await fetch_json(alltheplaces_runs)).pop().run_id;
 	await Promise.all(brands_data.map(async (brand, index) => {
 		await new Promise(async (resolve) => setTimeout(async () => {
 			console.log(`Starting ${brand.spider}`);
 			var osm_points = osm_data.filter(item => item.wikidata === brand.wikidata && item.tags[brand.key] === brand.value);
 			if(!atp_cache[brand.spider]){
-				let temp = await fetch_atp_data(brand.spider, last_run);
-				atp_cache[brand.spider] = temp;
+				try {
+					let temp = await fetch_atp_data(brand.spider, last_run);
+					atp_cache[brand.spider] = temp;
+				}
+				catch (e) {
+					console.error(`Error fetching ATP data for ${brand.spider}`);
+					resolve();
+					return;
+				}
 			}
 			var atp_points = atp_cache[brand.spider]
 			.filter(point => point.tags[brand.key] === brand.value);
-			let metadata = process(brand, osm_points, atp_points);
+			// let metadata = process(brand, osm_points, atp_points);
+			const matched_elements = process(brand, osm_points, atp_points);
+			const metadata = generate_metadata(matched_elements, osm_points, atp_points, brand);
 			stats.push(metadata);
 			resolve();
 		}, index * configs.delay));

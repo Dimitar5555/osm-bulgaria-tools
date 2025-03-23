@@ -1,6 +1,0 @@
-{
-    "output_path": "./docs/atp-data-sync/data",
-    "atp_url": "https://data.alltheplaces.xyz",
-    "max_distance": 250,
-	"allowed_countries": ["BG"]
-}

@@ -1,0 +1,8 @@
+{
+    "output_path": "./src/atp-osm/data",
+    "atp_url": "https://data.alltheplaces.xyz",
+    "max_distance": 250,
+	"allowed_countries": ["BG"],
+    "run_only": ["billa"],
+    "debug": false
+}

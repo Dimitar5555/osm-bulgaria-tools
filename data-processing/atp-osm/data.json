@@ -44,6 +44,7 @@
 		"spider": "kaufland",
 		"wikidata": "Q685967",
 		"type": "brand",
+		"match_by_ref": true,
 		"items": [
 			{
 				"key": "shop",
@@ -80,8 +81,7 @@
 			{
 				"key": "amenity",
 				"value": "recycling",
-				"compare_keys": [
-				]
+				"compare_keys": false
 			}
 		]
 	},
@@ -236,11 +236,6 @@
 					"fuel:*",
 					"self_service"
 				]
-			},
-			{
-				"key": "amenity",
-				"value": "charging_station",
-				"compare_keys": false
 			}
 		]
 	},
