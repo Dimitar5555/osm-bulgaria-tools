@@ -12,7 +12,7 @@
     "serve": "http-server ./dist/ -c-1 -o /",
     "start": "parcel $npm_package_config_parcel_paths",
     "build": "parcel build src/index.html",
-    "build-github": "parcel build $npm_package_config_parcel_paths --public-url $npm_package_homepage"
+    "build-github": "parcel build $npm_package_config_parcel_paths --public-url $npm_package_config_homepage"
   },
   "author": "",
   "dependencies": {
