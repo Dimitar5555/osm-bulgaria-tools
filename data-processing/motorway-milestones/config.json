@@ -1,0 +1,4 @@
+{
+    "motorway_prefix": "Автомагистрала",
+    "output_path": "./src/motorway-milestones"
+}
