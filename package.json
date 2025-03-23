@@ -2,13 +2,17 @@
   "name": "osm-bulgaria-tools",
   "version": "1.0.0",
   "description": "",
+  "config": {
+    "parcel_paths" : "./src/index.html ./src/atp-osm/index.html ./src/atp-osm/data/* ./src/assets/images/*",
+    "homepage": "https://dimitar5555.github.io/osm-bulgaria-tools/"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-atp-osm": "node ./data-processing/atp-osm/build.js",
     "serve": "http-server ./dist/ -c-1 -o /",
-    "start": "parcel ./src/index.html ./src/atp-osm/index.html ./src/atp-osm/data/* ./src/assets/images/*",
+    "start": "parcel $npm_package_config_parcel_paths",
     "build": "parcel build src/index.html",
-    "build-github": "parcel build src/index.html --public-url https://dimitar5555.github.io/osm-bulgaria-tools/"
+    "build-github": "parcel build $npm_package_config_parcel_paths --public-url $npm_package_homepage"
   },
   "author": "",
   "dependencies": {
