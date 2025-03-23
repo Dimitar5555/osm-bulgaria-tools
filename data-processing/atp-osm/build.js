@@ -101,7 +101,9 @@ function process(shop, osm_points, atp_points){
 			type: shop.type,
 			wikidata: shop.wikidata,
 			name: shop.name,
-			compare_keys: shop.compare_keys
+			compare_keys: shop.compare_keys,
+			key: shop.key,
+			value: shop.value
 		},
 		data: result
 	}));
