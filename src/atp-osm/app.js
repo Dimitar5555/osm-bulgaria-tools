@@ -435,11 +435,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	let spider = new URLSearchParams(window.location.search).get('spider');
 	console.log(spider)
 	if(spider) {
-		document.querySelector('#map').classList.remove('d-none');
+		const map_el = document.querySelector('#map');
+		map_el.classList.remove('d-none');
+		map_el.nextElementSibling.classList.add('d-none');
 		map = init_map();
 		show_spider_data(spider);
 	}
-	else {	
+	else {
 		document.querySelector('#map').nextElementSibling.classList.remove('d-none');
 		load_data();
 	}
