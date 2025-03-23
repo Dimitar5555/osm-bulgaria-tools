@@ -2,6 +2,8 @@ import { custom_fetch } from '/src/assets/js/utils.js';
 import { init_map, get_icon } from '/src/assets/js/map.js';
 import { markerClusterGroup } from 'leaflet.markercluster';
 
+
+
 function createTable(parent, items, spider_data, type, options=false) {
 	var table = document.createElement('table');
 	var tableData = generate_issue_table(type=='flagged'?items.sort((a,b) => a.dist>b.dist):items, spider_data, type);
@@ -288,7 +290,8 @@ function generate_tags_box(check_tags, atp_tags, osm_tags={}) {
 	return textarea;
 }
 
-function generate_popup(spider, location, compare_keys) {
+function generate_popup(spider, location) {
+	const {key, value, compare_keys} = spider;
 	const {atp, osm} = location;
 	const popup = document.createElement('div');
 	let tags;
@@ -301,7 +304,7 @@ function generate_popup(spider, location, compare_keys) {
 	else {
 		tags = generate_tags_box(compare_keys, atp.tags, osm.tags)
 	}
-	popup.appendChild(document.createTextNode(`${spider.key}=${spider.value}`));
+	popup.appendChild(document.createTextNode(`${key}=${value}`));
 	{
 		const brand_el = createHTMLElement('div', {class: 'brand'});
 		brand_el.appendChild(createHTMLElement('span', {innerText: spider.name}));
@@ -312,10 +315,8 @@ function generate_popup(spider, location, compare_keys) {
 		popup.appendChild(tags);
 	}
 	popup.appendChild(document.createElement('br'));
-	let btn_group = createHTMLElement('div', {class: 'btn-group'}, [
-		generate_OSM_link(osm?osm:atp),
-		generate_iD_link(osm?osm:atp)
-	]);
+	let btn_group = createHTMLElement('div', {class: 'btn-group'});
+	generate_popup_buttons(osm?osm:atp, btn_group);
 	popup.appendChild(btn_group);
 	if(location.dist) {
 		popup.appendChild(document.createTextNode(`Разстояние: `));
@@ -330,6 +331,75 @@ function generate_popup(spider, location, compare_keys) {
 	return popup;
 }
 
+function populate_map(key, value, spider_data, locations, overlays, cluster_group, global_overlays=false) {
+	let not_in_osm = [];
+	let not_in_atp = [];
+	let mismatched_tags = [];
+	let fine_markers = [];
+	let mismatched_location = [];
+
+	if(global_overlays) {
+		not_in_osm = overlays['not_in_OSM'];
+		not_in_atp = overlays['not_in_ATP'];
+		mismatched_tags = overlays['mismatched tags'];
+		fine_markers = overlays['fine'];
+		mismatched_location = overlays['mismatched location'];
+	}
+
+	for(const location of locations) {
+		if(!location.osm && !location.atp) {
+			continue;
+		}
+		let coordinates = (location.osm?location.osm:location.atp).coordinates;
+		let marker = new L.marker(coordinates);
+		if(location.atp) {
+			location.atp.tags[`${spider_data.metadata.type}:wikidata`] = spider_data.metadata.wikidata;
+			location.atp.tags[spider_data.metadata.type] = spider_data.metadata.name;
+		}
+		if(location.osm && location.atp && location.dist>50) {
+			marker.setIcon(get_icon('violet'));
+			mismatched_location.push(marker);
+			// let latlngs1 = [location.osm.coordinates, location.atp.coordinates]
+			/*lines.push*/(L.polyline([location.osm.coordinates, location.atp.coordinates], {color: 'red'})).addTo(map);
+		}
+		else if(!location.osm) {
+			marker.setIcon(get_icon('green'));
+			not_in_osm.push(marker);
+		}
+		else if(!location.atp) {
+			marker.setIcon(get_icon('red'));
+			not_in_atp.push(marker);
+		}
+		else if(location.tags_mismatch && spider_data.metadata.compare_keys) {
+			marker.setIcon(get_icon('orange'));
+			mismatched_tags.push(marker);
+		}
+		else {
+			// fine
+			marker.setIcon(get_icon('blue'));
+			fine_markers.push(marker);
+		}
+		const popup_content = generate_popup(spider_data.metadata, location, );
+		marker.bindPopup(popup_content, {maxWidth: 500});
+	}
+
+	if(!global_overlays) {
+		let not_in_osm_sub = L.featureGroup.subGroup(cluster_group, not_in_osm).addTo(map);
+		let not_in_ato_sub = L.featureGroup.subGroup(cluster_group, not_in_atp).addTo(map);
+		let mismatched_tags_sub = L.featureGroup.subGroup(cluster_group, mismatched_tags).addTo(map);
+		let mismatched_location_sub = L.featureGroup.subGroup(cluster_group, mismatched_location).addTo(map);
+		let fine_markers_sub = L.featureGroup.subGroup(cluster_group, fine_markers).addTo(map);
+		//let lines_sub = L.featureGroup.subGroup(cluster_group, lines).addTo(map);
+		
+		overlays[`${key}=${value} missing from OSM`] = not_in_osm_sub;
+		overlays[`${key}=${value} missing from ATP`] = not_in_ato_sub;
+		overlays[`${key}=${value} mismatched tags`] = mismatched_tags_sub;
+		overlays[`${key}=${value} mismatched location`] = mismatched_location_sub;
+		overlays[`${key}=${value} fine`] = fine_markers_sub;
+	}
+	// overlays[`${spider.key}=${spider.value} lines`] = lines_sub;
+}
+
 function show_spider_data(spider_name) {
     custom_fetch('/atp-osm/data/metadata.json')
     .then(res => res.json())
@@ -342,76 +412,20 @@ function show_spider_data(spider_name) {
 		let overlays = {};
 		populate_overview_table(spiders);
 		for(const spider of spiders) {
+			const {key, value} = spider;
 			document.querySelector('#table_title').innerText = spider.name;
 			/*if(last_category!==`${points.metadata.key}=${points.metadata.value}`){
 				last_category = `${points.metadata.key}=${points.metadata.value}`;
 				overview_table.appendChild(createHTMLElement('tr', {}, [createHTMLElement('th', {innerText: last_category, colspan: 5})]));
 			}*/
-			const locations_response = await custom_fetch(`/atp-osm/data/${spider.key}_${spider.value}_${spider.spider}.json`);
+			const locations_response = await custom_fetch(`/atp-osm/data/${key}_${value}_${spider.spider}.json`);
 			const spider_data = (await locations_response.json());
 			const locations = spider_data.data;
-			let not_in_osm = [];
-			let not_in_atp = [];
-			let mismatched_tags = [];
-			let fine_markers = [];
-			let mismatched_location = [];
-			let lines = [];
+			
 			const osm_count = locations.filter(location => location.osm).length;
 			const atp_count = locations.filter(location => location.atp).length;
-			console.log(`OSM: ${osm_count}, ATP: ${atp_count}`);
-			for(const location of locations) {
-				if(!location.osm && !location.atp) {
-					continue;
-				}
-				let coordinates = (location.osm?location.osm:location.atp).coordinates;
-				let marker = new L.marker(coordinates);
-				//.bindPopup(popup);
-				if(location.atp) {
-					console.log(location.atp)
-					location.atp.tags[`${spider_data.metadata.type}:wikidata`] = spider_data.metadata.wikidata;
-					location.atp.tags[spider_data.metadata.type] = spider_data.metadata.name;
-				}
-				if(location.osm && location.atp && location.dist>50) {
-					marker.setIcon(get_icon('violet'));
-					mismatched_location.push(marker);
-					// let latlngs1 = [location.osm.coordinates, location.atp.coordinates]
-					/*lines.push*/(L.polyline([location.osm.coordinates, location.atp.coordinates], {color: 'red'})).addTo(map);
-				}
-				else if(!location.osm) {
-					marker.setIcon(get_icon('green'));
-					not_in_osm.push(marker);
-				}
-				else if(!location.atp) {
-					marker.setIcon(get_icon('red'));
-					not_in_atp.push(marker);
-				}
-				else if(location.tags_mismatch && spider_data.metadata.compare_keys) {
-					marker.setIcon(get_icon('orange'));
-					mismatched_tags.push(marker);
-				}
-				else {
-					// fine
-					marker.setIcon(get_icon('blue'));
-					fine_markers.push(marker);
-				}
-				const popup_content = generate_popup(spider, location, spider_data.metadata.compare_keys);
-				marker.bindPopup(popup_content, {maxWidth: 500});
-			}
-			console.log(spider, spiders)
-			console.log(not_in_osm, not_in_atp, mismatched_tags);
-			let not_in_osm_sub = L.featureGroup.subGroup(cluster_group, not_in_osm).addTo(map);
-			let not_in_ato_sub = L.featureGroup.subGroup(cluster_group, not_in_atp).addTo(map);
-			let mismatched_tags_sub = L.featureGroup.subGroup(cluster_group, mismatched_tags).addTo(map);
-			let mismatched_location_sub = L.featureGroup.subGroup(cluster_group, mismatched_location).addTo(map);
-			let fine_markers_sub = L.featureGroup.subGroup(cluster_group, fine_markers).addTo(map);
-			//let lines_sub = L.featureGroup.subGroup(cluster_group, lines).addTo(map);
-			
-			overlays[`${spider.key}=${spider.value} missing from OSM`] = not_in_osm_sub;
-			overlays[`${spider.key}=${spider.value} missing from ATP`] = not_in_ato_sub;
-			overlays[`${spider.key}=${spider.value} mismatched tags`] = mismatched_tags_sub;
-			overlays[`${spider.key}=${spider.value} mismatched location`] = mismatched_location_sub;
-			overlays[`${spider.key}=${spider.value} fine`] = fine_markers_sub;
-			// overlays[`${spider.key}=${spider.value} lines`] = lines_sub;
+			console.log(`OSM: ${osm_count}, ATP: ${atp_count}, ${key}=${value}`);
+			populate_map(key, value, spider_data, locations, overlays, cluster_group);
 		}
 		L.control.layers([], overlays, {collapsed: true}).addTo(map);
 	})
@@ -421,11 +435,62 @@ document.addEventListener('DOMContentLoaded', () => {
 	let spider = new URLSearchParams(window.location.search).get('spider');
 	console.log(spider)
 	if(spider) {
-		document.querySelector('#map').classList.remove('hidden');
+		document.querySelector('#map').classList.remove('d-none');
 		map = init_map();
 		show_spider_data(spider);
 	}
 	else {	
+		document.querySelector('#map').nextElementSibling.classList.remove('d-none');
 		load_data();
 	}
 });
+
+function load_all_map_data() {
+	document.querySelector('#map').classList.remove('d-none');
+	map = init_map();
+	document.querySelector('#map').nextElementSibling.classList.add('d-none');
+
+	let overlays = {};
+	let markers = {
+		'not_in_OSM': [],
+		'not_in_ATP': [],
+		'mismatched tags': [],
+		'fine': [],
+		'mismatched location': []
+	}
+	let cluster_group = new L.markerClusterGroup({
+		disableClusteringAtZoom: 16,
+		showCoverageOnHover: false
+	}).addTo(map);
+	console.time('load_all_map_data');
+    custom_fetch('/atp-osm/data/metadata.json')
+	.then(res => res.json())
+	.then(data => {
+		let promises = [];
+		for(const {key, value, spider} of data) {
+			const promise = custom_fetch(`/atp-osm/data/${key}_${value}_${spider}.json`)
+			.then(res => res.json())
+			.then(spider_data => {
+				const locations = spider_data.data;
+				populate_map(key, value, spider_data, locations, markers, cluster_group, true);
+			});
+			promises.push(promise);
+		}
+		return Promise.all(promises);
+	})
+	.then(() => {
+
+		overlays['not_in_OSM'] = L.featureGroup.subGroup(cluster_group, markers['not_in_OSM']).addTo(map);
+		overlays['not_in_ATP'] = L.featureGroup.subGroup(cluster_group, markers['not_in_ATP']).addTo(map);
+		overlays['mismatched tags'] = L.featureGroup.subGroup(cluster_group, markers['mismatched tags']).addTo(map);
+		overlays['fine'] = L.featureGroup.subGroup(cluster_group, markers['fine']).addTo(map);
+		overlays['mismatched location'] = L.featureGroup.subGroup(cluster_group, markers['mismatched location']).addTo(map);
+
+		console.timeEnd('load_all_map_data');
+		console.log('Done');
+		console.log(overlays);
+		L.control.layers([], overlays, {collapsed: true}).addTo(map);
+	});
+}
+
+document.querySelector('#map').nextElementSibling.children[0].addEventListener('click', load_all_map_data);
