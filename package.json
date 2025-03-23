@@ -5,9 +5,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-atp-osm": "node ./data-processing/atp-osm/build.js",
-    "serve": "http-server ./docs/ -c-1 -o /",
+    "serve": "http-server ./dist/ -c-1 -o /",
     "start": "parcel ./src/index.html ./src/atp-osm/index.html ./src/atp-osm/data/* ./src/assets/images/*",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html",
+    "build-github": "parcel build src/index.html --public-url https://dimitar5555.github.io/osm-bulgaria-tools/"
   },
   "author": "",
   "dependencies": {
