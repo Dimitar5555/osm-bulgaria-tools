@@ -262,7 +262,6 @@ function populate_overview_table(spiders, by_category=false) {
 			createHTMLElement('td'),
 			createHTMLElement('td', {innerText: spider.stats.atp}),
 			createHTMLElement('td', {innerText: spider.stats.osm}),
-			createHTMLElement('td', {innerText: spider.stats.tags_mismatches}),
 			createHTMLElement('td', {innerText: `${spider.stats.percent_atp_to_osm_matched}%`})
 		]);
 		if(by_category) {
