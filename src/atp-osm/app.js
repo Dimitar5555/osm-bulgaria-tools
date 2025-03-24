@@ -405,6 +405,10 @@ function show_spider_data(spider_name) {
     .then(res => res.json())
 	.then(spiders => spiders.filter(spider => spider.spider === spider_name))
 	.then(async (spiders) => {
+		if(spiders.some(spider => spider.fuzzy_coords)) {
+			document.querySelector('#fuzzy_coords_notice').classList.remove('d-none');
+		}
+
 		let cluster_group = new L.markerClusterGroup({
 			disableClusteringAtZoom: 16,
 			showCoverageOnHover: false
