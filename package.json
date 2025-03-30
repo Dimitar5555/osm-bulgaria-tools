@@ -3,15 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "config": {
-    "parcel_paths" : "./src/index.html ./src/atp-osm/index.html ./src/atp-osm/data/* ./src/assets/images/* ./src/motorway-milestones/index.html ./src/motorway-milestones/data.json",
+    "parcel_paths": "./src/index.html ./src/atp-osm/index.html ./src/atp-osm/data/* ./src/assets/images/* ./src/motorway-milestones/index.html ./src/motorway-milestones/data.json",
     "homepage": "https://dimitar5555.github.io/osm-bulgaria-tools/"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-
     "build-atp-osm": "node ./data-processing/atp-osm/build.js",
     "build-motorway-milestones": "node ./data-processing/motorway-milestones/build.js",
-
     "start": "parcel $npm_package_config_parcel_paths",
     "build": "parcel build $npm_package_config_parcel_paths",
     "build-github": "parcel build $npm_package_config_parcel_paths --public-url $npm_package_config_homepage"
@@ -19,6 +17,7 @@
   "author": "",
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "http-server": "^14.1.1",
     "leaflet": "^1.9.4",
     "leaflet.featuregroup.subgroup": "^1.0.2",

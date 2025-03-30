@@ -80,15 +80,23 @@ function generate_popup_buttons(location, group) {
 	}
 
 	{
-		const map_anchor = create_anchor(map_url, 'OSM', true);
+		const map_anchor = create_anchor(map_url, ' OSM', true);
 		map_anchor.classList.add('btn', 'btn-outline-primary');
 		map_anchor.setAttribute('role', 'button');
+
+		const globe_icon = createHTMLElement('i', {class: 'bi bi-globe2'});
+		map_anchor.insertBefore(globe_icon, map_anchor.firstChild);
+
 		group.appendChild(map_anchor);
 	}
 	{
-		const edit_anchor = create_anchor(edit_url, 'iD', true);
+		const edit_anchor = create_anchor(edit_url, ' iD', true);
 		edit_anchor.classList.add('btn', 'btn-outline-primary');
 		edit_anchor.setAttribute('role', 'button');
+
+		const pencil_icon = createHTMLElement('i', {class: 'bi bi-pencil'});
+		edit_anchor.insertBefore(pencil_icon, edit_anchor.firstChild);
+
 		group.appendChild(edit_anchor);
 	}
 }
