@@ -1,60 +1,29 @@
 import fs from 'fs';
-import { fetch_configs, fetch_data_from_overpass_turbo } from '../global/utilities.js';
+import { fetch_configs } from '../global/utilities.js';
 import path, { dirname } from 'path';
-import { preprocess_atp_data, preprocess_osm_data, distance, drop_tags, are_tags_mismatched, calc_bbox, generate_metadata } from './utilities.js';
+import { distance, drop_tags, are_tags_mismatched, calc_bbox, generate_metadata } from './utilities.js';
+
+import { fetch_all_osm_data } from './build_osm.js';
+import { populate_atp_cache } from './build_atp.js';
 
 const local_path = path.resolve(dirname('../'))+'/data-processing/atp-osm';
 const configs = fetch_configs(local_path);
 
-async function fetch_json(url, options){
-	var result = await fetch(url, options);
-	return result.json();
-}
-async function fetch_atp_data(spider, run){
-	// let data = await fetch_json(`${configs.atp_url}/runs/latest/output/${spider}.geojson`);
-	let data = await fetch_json(`${configs.atp_url}/runs/${run}/output/${spider}.geojson`);
-	return preprocess_atp_data(data, configs);
-}
-async function fetch_all_osm_data(wikidata_items, retry=false) {
-	const formatted_selectors = wikidata_items.map(item => `nwr[${item.tag}]["${item.type?item.type:'brand'}:wikidata"="${item.wikidata}"](area.searchArea);`).join('');
-	const query = `(${formatted_selectors});out center;`;
-	console.log('Quering Overpass Turbo');
-	
-	var to_return = await fetch_data_from_overpass_turbo(query, true);
-	if(to_return.length==0 && retry==false){
-		console.error('ovepass returned empty result set, retrying');
-		var temp = await fetch_all_osm_data(wikidata_items, true);
-		if(temp.length!=0){
-			to_return = temp;
-		}
-		console.error('empty result again, terminating');
-		process.exit(1);
-	}
-	preprocess_osm_data(to_return);
-	return to_return;
-}
-
-function match_atp_to_osm(osm, atp_points, max_distance=false){
-	// when max distance is false, use fuzzy search
-	let distances;
-	if(max_distance){
-		const bbox = calc_bbox(osm.coordinates, max_distance);
-		distances = atp_points.map(atp => distance(atp, osm, bbox));
-	}
-	else{
-		distances = atp_points.map(atp => distance(atp, osm));
-	}
+function match_atp_to_osm(osm, atp_points, max_distance){
+	const bbox = calc_bbox(osm.coordinates, max_distance);
+	const distances = atp_points.map(atp => distance(atp, osm, bbox));
 	const closest_index = distances.indexOf(Math.min(...(distances)));
-	if(closest_index != -1 && (distances[closest_index] != +Infinity || !max_distance)){
+
+	if(closest_index != -1 && (distances[closest_index] != +Infinity || !max_distance)) {
 		return {index: closest_index, distance: distances[closest_index]};
 	}
 	return {index: -1};
 }
 
-function process(shop, osm_points, atp_points){
+function process(/*shop,*/ osm_points, atp_points, compare_keys){
 	let result = [];
 
-	const max_distance = shop.max_distance?shop.max_distance:configs.max_distance;
+	const max_distance = /*shop.max_distance?shop.max_distance:*/configs.max_distance;
 
 	osm_points.forEach((osm) => {
 		const match = match_atp_to_osm(osm, atp_points, max_distance);
@@ -71,102 +40,100 @@ function process(shop, osm_points, atp_points){
 		result.push(temp);
 	});
 	// match anything left, if fuzzy coords
-	console.log(shop);
-	if(shop.fuzzy_coords){
-		result.forEach((row, index) => {
-			if(!row.atp && atp_points.length>0){
-				//const distances = atp_points.map(atp=>valid_point(atp, item.key, item.value)?distance(atp.coordinates, row.osm.coordinates):+Infinity);
-				const match = match_atp_to_osm(row.osm, atp_points);
-				result[index].atp = drop_tags(atp_points.splice(match.index, 1)[0], true)
-				result.fuzzy = true;
-				result.dist = match.distance;
-			}
-		});
-	}
+	// if(shop.fuzzy_coords){
+	// 	result.forEach((row, index) => {
+	// 		if(!row.atp && atp_points.length>0){
+	// 			//const distances = atp_points.map(atp=>valid_point(atp, item.key, item.value)?distance(atp.coordinates, row.osm.coordinates):+Infinity);
+	// 			const match = match_atp_to_osm(row.osm, atp_points);
+	// 			result[index].atp = drop_tags(atp_points.splice(match.index, 1)[0], true)
+	// 			result.fuzzy = true;
+	// 			result.dist = match.distance;
+	// 		}
+	// 	});
+	// }
 	
 	result.forEach(row => {
 		if(!row.osm || !row.atp){
 			row.tags_mismatch = false;
 			return;
 		}
-		row.tags_mismatch = are_tags_mismatched(row.osm?row.osm.tags:[], row.atp?row.atp.tags:[], shop.compare_keys);
+		const osm_tags = row.osm ? row.osm.tags : [];
+		const atp_tags = row.atp ? row.atp.tags : [];
+		row.tags_mismatch = are_tags_mismatched(osm_tags, atp_tags, compare_keys);
 	});
 
-	console.log(shop.spider+' is done');
 	atp_points.forEach(point => {
 		result.push({osm: false, atp: drop_tags(point, true), tags_mismatch: false, dist: 0});
 	});
-	fs.writeFileSync(`${configs.output_path}/${shop.key}_${shop.value}_${shop.spider}.json`, JSON.stringify({
-		metadata: {
-			type: shop.type,
-			wikidata: shop.wikidata,
-			name: shop.name,
-			compare_keys: shop.compare_keys,
-			key: shop.key,
-			value: shop.value
-		},
-		data: result
-	}));
 	return result;
 }
+
+function save_result(data, {key, value, spider, compare_keys, name}) {
+	const data_for_saving = {
+		metadata: {
+			name,
+			key,
+			value,
+			compare_keys
+		},
+		data
+	};
+	const filename = `${configs.output_path}/${key}_${value}_${spider}.json`;
+	fs.writeFileSync(filename, JSON.stringify(data_for_saving));
+}
+
+function find_relevant_osm_points(osm_points, key, value, wikidata) {
+	return osm_points.filter(item =>
+		item.tags[key] === value
+		&& 
+		(
+			typeof wikidata === 'object' && typeof wikidata[0] === 'object' && wikidata.some(([type, wikidata]) => item.tags[`${type}:wikidata`] === wikidata)
+			|| typeof wikidata === 'object' && typeof wikidata[0] !== 'object' && item.tags[`${wikidata[0]}:wikidata`] === wikidata[1]
+		)
+	);
+}
+
 async function start() {
 	const spiders = JSON.parse(fs.readFileSync(`${local_path}/data.json`))
-	.filter(spider => !spider.skip)
-	.filter(spider => !configs.debug || configs.debug && configs.run_only.includes(spider.spider));
+	.filter(spider => !configs.debug || configs.debug && configs.run_only.includes(spider.atp_spider));
 
-	const alltheplaces_latest_run = `${configs.atp_url}/runs/latest.json`;
-	const last_run = (await fetch_json(alltheplaces_latest_run)).run_id;
-
-	let brands_data = spiders.map(brand => {
-		return brand.items.map(item => {
-			item.fuzzy_coords ??= false;
-			return ({
-				wikidata: brand.wikidata,
-				type: brand.type?brand.type:item.type,
-				tag: `${item.key}=${item.value}`,
-				key: item.key,
-				value: item.value,
-				spider: brand.spider,
-				compare_keys: item.compare_keys,
-				name: brand.name,
-				fuzzy_coords: item.fuzzy_coords
-			});
-		});
-	}).flat();
-	var osm_data = await fetch_all_osm_data(brands_data);
-	var atp_cache = {};
-	var stats = [];
-	await Promise.all(brands_data.map(async (brand, index) => {
-		await new Promise(async (resolve) => setTimeout(async () => {
-			console.log(`Starting ${brand.spider}`);
-			var osm_points = osm_data.filter(item => item.wikidata === brand.wikidata && item.tags[brand.key] === brand.value);
-			if(!atp_cache[brand.spider]){
-				try {
-					let temp = await fetch_atp_data(brand.spider, last_run);
-					atp_cache[brand.spider] = temp;
-				}
-				catch (e) {
-					console.error(`Error fetching ATP data for ${brand.spider}`);
-					resolve();
-					return;
+	let overpass_pairs = [];
+	for(const spider of spiders) {
+		for(const item of spider.osm) {
+			const {key, value} = item;
+			if(typeof item.wikidata === 'object' && typeof item.wikidata[0] === 'object') {
+				for(const [type, wikidata] of item.wikidata) {
+					overpass_pairs.push({key, value, wikidata, type});
 				}
 			}
-			var atp_points = atp_cache[brand.spider]
-			.filter(point => point.tags[brand.key] === brand.value);
-			// let metadata = process(brand, osm_points, atp_points);
-			const matched_elements = process(brand, osm_points, atp_points);
-			const metadata = generate_metadata(matched_elements, osm_points, atp_points, brand);
+			else {
+				const [type, wikidata] = item.wikidata;
+				overpass_pairs.push({key, value, wikidata, type});
+			}
+		}
+	}
+
+	let osm_data = await fetch_all_osm_data(overpass_pairs);
+	let atp_cache = {};
+	await populate_atp_cache(spiders, atp_cache);
+	let stats = [];
+	for(const {atp_spider, osm, name} of spiders) {
+		console.log(`Starting ${atp_spider}`);
+		for(const osm_item of osm) {
+			const atp_points = atp_cache[atp_spider];
+			const relevant_atp_points = atp_points.filter(point => point.tags[osm_item.key] === osm_item.value);
+
+			const osm_points = find_relevant_osm_points(osm_data, osm_item.key, osm_item.value, osm_item.wikidata);
+			if(relevant_atp_points.length === 0 || osm_points.length === 0) {
+				continue;
+			}
+			const matched_elements = process(osm_points, relevant_atp_points, osm_item.compare_keys);
+			save_result(matched_elements, {key: osm_item.key, value: osm_item.value, spider: atp_spider, compare_keys: osm_item.compare_keys, name});
+			const metadata = generate_metadata(matched_elements, osm_points, relevant_atp_points, {name, spider: atp_spider, key: osm_item.key, value: osm_item.value, compare_keys: osm_item.compare_keys});
 			stats.push(metadata);
-			resolve();
-		}, index * configs.delay));
-	}))
-	.then(() => {
-		//let brands_list = brands.map(brand => ({name: brand.name, spider: brand.spider}));
-		fs.writeFileSync(`${configs.output_path}/metadata.json`, JSON.stringify(stats));
-		//current_data = current_data.sort((a, b) => a.metadata.spider.tag>b.metadata.spider.tag);
-		//fs.writeFileSync(`data.json`, JSON.stringify(current_data));
-		//stats.forEach((row, index) => stats[index].time_spent_matching = +((row.matching_time/row.total_time)*100).toFixed(2));
-		//console.table(stats)
-	});
+		}
+		console.log(`Finished ${atp_spider}`);
+	}
+	fs.writeFileSync(`${configs.output_path}/metadata.json`, JSON.stringify(stats));
 }
 start();

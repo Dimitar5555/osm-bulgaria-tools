@@ -1,31 +1,26 @@
 [
 	{
 		"name": "Lidl",
-		"spider": "lidl_bg",
-		"wikidata": "Q108169047",
-		"type": "brand",
-		"items": [
+		"atp_spider": "lidl_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "supermarket",
+				"wikidata": ["brand", "Q108169047"],
 				"compare_keys": [
 					"opening_hours"
-				],
-				"drop_tags": [
-					"website"
 				]
 			}
 		]
 	},
 	{
 		"name": "Банка ДСК",
-		"spider": "dsk_bank_bg",
-		"wikidata": "Q5206146",
-		"type": "brand",
-		"items": [
+		"atp_spider": "dsk_bank_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "atm",
+				"wikidata": ["brand", "Q5206146"],
 				"compare_keys": [
 					"cash_in"
 				]
@@ -33,6 +28,7 @@
 			{
 				"key": "amenity",
 				"value": "bank",
+				"wikidata": ["brand", "Q5206146"],
 				"compare_keys": [
 					"opening_hours"
 				]
@@ -41,14 +37,12 @@
 	},
 	{
 		"name": "Kaufland",
-		"spider": "kaufland",
-		"wikidata": "Q685967",
-		"type": "brand",
-		"match_by_ref": true,
-		"items": [
+		"atp_spider": "kaufland",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "supermarket",
+				"wikidata": ["brand", "Q685967"],
 				"compare_keys": [
 					"opening_hours",
 					"website",
@@ -59,13 +53,12 @@
 	},
 	{
 		"name": "Yettel",
-		"spider": "yettel_bg",
-		"wikidata": "Q14915070",
-		"type": "brand",
-		"items": [
+		"atp_spider": "yettel_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "telecommunication",
+				"wikidata": ["brand", "Q14915070"],
 				"compare_keys": [
 					"opening_hours"
 				]
@@ -74,26 +67,24 @@
 	},
 	{
 		"name": "M-texx",
-		"spider": "mtexx_bg",
-		"wikidata": "Q122947768",
-		"type": "operator",
-		"items": [
+		"atp_spider": "mtexx_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "recycling",
+				"wikidata": ["operator", "Q122947768"],
 				"compare_keys": false
 			}
 		]
 	},
 	{
 		"name": "dm",
-		"spider": "dm",
-		"wikidata": "Q266572",
-		"type": "brand",
-		"items": [
+		"atp_spider": "dm",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "chemist",
+				"wikidata": ["brand", "Q266572"],
 				"compare_keys": [
 					"opening_hours",
 					"phone",
@@ -104,13 +95,12 @@
 	},
 	{
 		"name": "Billa",
-		"spider": "billa",
-		"wikidata": "Q537781",
-		"type": "brand",
-		"items": [
+		"atp_spider": "billa",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "supermarket",
+				"wikidata": [["brand", "Q537781"], ["brand", "Q124377887"]],
 				"compare_keys": [
 					"opening_hours",
 					"phone"
@@ -120,13 +110,12 @@
 	},
 	{
 		"name": "kik",
-		"spider": "kik",
-		"wikidata": "Q883965",
-		"type": "brand",
-		"items": [
+		"atp_spider": "kik",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "clothes",
+				"wikidata": ["brand", "Q883965"],
 				"compare_keys": [
 					"opening_hours",
 					"addr:postcode"
@@ -136,13 +125,12 @@
 	},
 	{
 		"name": "Лукойл",
-		"spider": "lukoil",
-		"wikidata": "Q329347",
-		"type": "brand",
-		"items": [
+		"atp_spider": "lukoil",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "fuel",
+				"wikidata": ["brand", "Q329347"],
 				"fuzzy_coords": true,
 				"compare_keys": [
 					"opening_hours",
@@ -153,13 +141,12 @@
 	},
 	{
 		"name": "Фантастико",
-		"spider": "fantastiko_bg",
-		"wikidata": "Q61140834",
-		"type": "brand",
-		"items": [
+		"atp_spider": "fantastiko_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "supermarket",
+				"wikidata": ["brand", "Q61140834"],
 				"compare_keys": [
 					"opening_hours",
 					"website",
@@ -170,13 +157,12 @@
 	},
 	{
 		"name": "Техномаркет",
-		"spider": "technomarket_bg",
-		"wikidata": "Q7692633",
-		"type": "brand",
-		"items": [
+		"atp_spider": "technomarket_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "electronics",
+				"wikidata": ["brand", "Q7692633"],
 				"compare_keys": [
 					"opening_hours",
 					"website"
@@ -186,13 +172,12 @@
 	},
 	{
 		"name": "Централна Кооперативна Банка",
-		"spider": "ccbank_bg",
-		"wikidata": "Q2944755",
-		"type": "brand",
-		"items": [
+		"atp_spider": "ccbank_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "bank",
+				"wikidata": ["brand", "Q2944755"],
 				"compare_keys": [
 					"opening_hours"
 				]
@@ -200,19 +185,19 @@
 			{
 				"key": "amenity",
 				"value": "atm",
+				"wikidata": ["brand", "Q2944755"],
 				"compare_keys": false
 			}
 		]
 	},
 	{
 		"name": "Технополис",
-		"spider": "technopolis_bg",
-		"wikidata": "Q28056752",
-		"type": "brand",
-		"items": [
+		"atp_spider": "technopolis_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "electronics",
+				"wikidata": ["brand", "Q28056752"],
 				"compare_keys": [
 					"opening_hours",
 					"ref"
@@ -222,14 +207,12 @@
 	},
 	{
 		"name": "Петрол",
-		"spider": "petrol_bg",
-		"wikidata": "Q24315",
-		"type": "brand",
-		"items": [
+		"atp_spider": "petrol_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "fuel",
-				"fuzzy_coords": true,
+				"wikidata": ["brand", "Q24315"],
 				"compare_keys": [
 					"phone",
 					"opening_hours",
@@ -241,34 +224,33 @@
 	},
 	{
 		"name": "OMV",
-		"spider": "omv",
-		"wikidata": "Q168238",
-		"type": "brand",
-		"items": [
+		"atp_spider": "omv",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "fuel",
+				"wikidata": ["brand", "Q168238"],
+				"fuzzy_coords": true,
 				"compare_keys": [
 					"phone",
 					"opening_hours",
 					"car_wash",
 					"vacuum_cleaner",
 					"emergency",
-					"atm",
-					"fuel:*"
+					"fuel:*",
+					"atm"
 				]
 			}
 		]
 	},
 	{
 		"name": "BoxNow",
-		"spider": "box_now",
-		"wikidata": "Q117195372",
-		"type": "brand",
-		"items": [
+		"atp_spider": "box_now",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "parcel_locker",
+				"wikidata": ["brand", "Q117195372"],
 				"compare_keys": [
 					"ref"
 				]
@@ -277,28 +259,27 @@
 	},
 	{
 		"name": "easybox",
-		"spider": "easybox_bg",
-		"wikidata": "Q114496224",
-		"type": "brand",
-		"items": [
+		"atp_spider": "easybox_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "parcel_locker",
+				"wikidata": ["brand", "Q114496224"],
 				"compare_keys": [
 					"opening_hours"
 				]
 			}
 		]
 	},
+	
 	{
 		"name": "Rompetrol",
-		"spider": "rompetrol",
-		"wikidata": "Q1788862",
-		"type": "brand",
-		"items": [
+		"atp_spider": "rompetrol",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "fuel",
+				"wikidata": ["brand", "Q1788862"],
 				"compare_keys": [
 					"opening_hours",
 					"fuel:*",
@@ -310,13 +291,12 @@
 	},
 	{
 		"name": "Vivacom",
-		"spider": "vivacom_bg",
-		"wikidata": "Q7937522",
-		"type": "brand",
-		"items": [
+		"atp_spider": "vivacom_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "telecommunication",
+				"wikidata": ["brand", "Q7937522"],
 				"compare_keys": [
 					"opening_hours",
 					"phone"
@@ -326,13 +306,12 @@
 	},
 	{
 		"name": "A1",
-		"spider": "a1_bg",
-		"wikidata": "Q1941592",
-		"type": "brand",
-		"items": [
+		"atp_spider": "a1_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "telecommunication",
+				"wikidata": ["brand", "Q1941592"],
 				"compare_keys": [
 					"opening_hours",
 					"phone"
@@ -342,13 +321,12 @@
 	},
 	{
 		"name": "I&G Brokers",
-		"spider": "i_and_g_brokers",
-		"wikidata": "Q110399829",
-		"type": "brand",
-		"items": [
+		"atp_spider": "i_and_g_brokers",
+		"osm": [
 			{
 				"key": "office",
 				"value": "insurance",
+				"wikidata": ["brand", "Q110399829"],
 				"compare_keys": [
 					"phone",
 					"opening_hours"
@@ -358,13 +336,12 @@
 	},
 	{
 		"name": "Мусала Инс",
-		"spider": "mussala_bg",
-		"wikidata": "Q120314195",
-		"type": "brand",
-		"items": [
+		"atp_spider": "mussala_bg",
+		"osm": [
 			{
 				"key": "office",
 				"value": "insurance",
+				"wikidata": ["brand", "Q120314195"],
 				"compare_keys": [
 					"ref",
 					"phone"
@@ -374,13 +351,12 @@
 	},
 	{
 		"name": "EasyPay",
-		"spider": "easypay",
-		"wikidata": "Q110583289",
-		"type": "brand",
-		"items": [
+		"atp_spider": "easypay",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "payment_centre",
+				"wikidata": ["brand", "Q110583289"],
 				"compare_keys": [
 					"ref"
 				]
@@ -389,26 +365,24 @@
 	},
 	{
 		"name": "Pepco",
-		"spider": "pepco",
-		"wikidata": "Q11815580",
-		"type": "brand",
-		"items": [
+		"atp_spider": "pepco",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "clothes",
+				"wikidata": ["brand", "Q11815580"],
 				"compare_keys": false
 			}
 		]
 	},
 	{
 		"name": "Lilly",
-		"spider": "lilly_bg",
-		"wikidata": "Q111764460",
-		"type": "brand",
-		"items": [
+		"atp_spider": "lilly_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "chemist",
+				"wikidata": ["brand", "Q111764460"],
 				"compare_keys": [
 					"opening_hours",
 					"phone"
@@ -418,13 +392,12 @@
 	},
 	{
 		"name": "Български пощи",
-		"spider": "bulgarian_posts_bg",
-		"wikidata": "Q2880826",
-		"type": "operator",
-		"items": [
+		"atp_spider": "bulgarian_posts_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "post_office",
+				"wikidata": ["brand", "Q2880826"],
 				"compare_keys": [
 					"opening_hours"
 				]
@@ -433,13 +406,12 @@
 	},
 	{
 		"name": "Jysk",
-		"spider": "jysk",
-		"wikidata": "Q138913",
-		"type": "brand",
-		"items": [
+		"atp_spider": "jysk",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "furniture",
+				"wikidata": ["brand", "Q138913"],
 				"compare_keys": [
 					"website",
 					"opening_hours"
@@ -449,26 +421,25 @@
 	},
 	{
 		"name": "TexCycle",
-		"spider": "texcycle_bg",
-		"wikidata": "Q85614408",
-		"type": "operator",
-		"items": [
+		"atp_spider": "texcycle_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "recycling",
+				"wikidata": ["operator", "Q85614408"],
 				"compare_keys": false
 			}
 		]
 	},
 	{
 		"name": "Shell",
-		"spider": "shell",
-		"wikidata": "Q110716465",
-		"type": "brand",
-		"items": [
+		"atp_spider": "shell",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "fuel",
+				"wikidata": ["brand", "Q110716465"],
+				"fuzzy_coords": true,
 				"compare_keys": [
 					"phone",
 					"opening_hours",
@@ -482,26 +453,24 @@
 	},
     {
         "name": "Cashterminal",
-        "spider": "cashterminal_bg",
-        "wikidata": "Q115668697",
-        "type": "brand",
-		"items": [
+        "atp_spider": "cashterminal_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "payment_terminal",
+				"wikidata": ["brand", "Q115668697"],
 				"compare_keys": false
 			}
 		]
     },
     {
         "name": "Fibank",
-        "spider": "fibank_bg",
-        "wikidata": "Q3367065",
-        "type": "brand",
-		"items": [
+        "atp_spider": "fibank_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "atm",
+				"wikidata": ["brand", "Q3367065"],
 				"compare_keys": [
 					"cash_in",
 					"authentication:contactless"
@@ -510,6 +479,7 @@
 			{
 				"key": "amenity",
 				"value": "bank",
+				"wikidata": ["brand", "Q3367065"],
 				"compare_keys": [
 					"opening_hours"
 				]
@@ -518,13 +488,12 @@
     },
     {
         "name": "Пощенска банка",
-        "spider": "postbank_bg",
-        "wikidata": "Q7234083",
-        "type": "brand",
-		"items": [
+        "atp_spider": "postbank_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "atm",
+				"wikidata": ["brand", "Q7234083"],
 				"compare_keys": [
 					"cash_in",
 					"authentication:contactless"
@@ -533,50 +502,46 @@
 			{
 				"key": "amenity",
 				"value": "bank",
+				"wikidata": ["brand", "Q7234083"],
 				"compare_keys": [
-					"opening_hours",
-					"phone",
-					"self_service"
+					"opening_hours"
 				]
 			}
 		]
     },
     {
         "name": "Еконт",
-        "spider": "econt_bg",
-        "wikidata": "Q12279603",
-        "type": false,
-		"items": [
+        "atp_spider": "econt_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "parcel_locker",
+				"wikidata": ["brand", "Q12279603"],
 				"compare_keys": [
 					"opening_hours"
-				],
-				"type": "brand"
+				]
 			},
 			{
 				"key": "amenity",
 				"value": "post_office",
+				"wikidata": ["brand", "Q12279603"],
 				"compare_keys": [
 					"opening_hours",
 					"phone",
 					"email",
 					"branch"
-				],
-				"type": "operator"
+				]
 			}
 		]
     },
 	{
 		"name": "Т-Маркет",
-		"spider": "t_market_bg",
-		"wikidata": "Q64033983",
-		"type": "brand",
-		"items": [
+		"atp_spider": "t_market_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "supermarket",
+				"wikidata": ["brand", "Q64033983"],
 				"compare_keys": [
 					"opening_hours"
 				]
@@ -585,14 +550,12 @@
 	},
 	{
 		"name": "Praktiker",
-		"spider": "praktiker_bg",
-		"wikidata": "Q110399491",
-		"type": "brand",
-		"skip": true,
-		"items": [
+		"atp_spider": "praktiker_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "doityourself",
+				"wikidata": ["brand", "Q110399491"],
 				"compare_keys": [
 					"opening_hours"
 				]
@@ -601,28 +564,24 @@
 	},
 	{
 		"name": "Minimart",
-		"spider": "minimart_bg",
-		"wikidata": "Q119168386",
-		"type": "brand",
-		"skip": true,
-		"items": [
+		"atp_spider": "minimart_bg",
+		"osm": [
 			{
 				"key": "shop",
 				"value": "convenience",
+				"wikidata": ["brand", "Q119168386"],
 				"compare_keys": false
 			}
 		]
 	},
 	{
 		"name": "ОББ",
-		"spider": "ubb_bg",
-		"wikidata": "Q7887555",
-		"type": "brand",
-		"skip": true,
-		"items": [
+		"atp_spider": "ubb_bg",
+		"osm": [
 			{
 				"key": "amenity",
 				"value": "atm",
+				"wikidata": ["brand", "Q7887555"],
 				"compare_keys": [
 					"opening_hours",
 					"cash_in"
@@ -631,31 +590,7 @@
 			{
 				"key": "amenity",
 				"value": "bank",
-				"compare_keys": [
-					"opening_hours",
-					"phone"
-				]
-			}
-		]
-	},
-	{
-		"name": "ОББ*",
-		"spider": "ubb_bg",
-		"wikidata": "Q7283808",
-		"type": "brand",
-		"skip": true,
-		"items": [
-			{
-				"key": "amenity",
-				"value": "atm",
-				"compare_keys": [
-					"opening_hours",
-					"cash_in"
-				]
-			},
-			{
-				"key": "amenity",
-				"value": "bank",
+				"wikidata": ["brand", "Q7887555"],
 				"compare_keys": [
 					"opening_hours",
 					"phone"
