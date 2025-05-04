@@ -318,6 +318,9 @@ function generate_popup(spider, location) {
 
 		popup.appendChild(brand_el);
 	}
+	if(atp && atp.tags['addr:street_address']) {
+		popup.appendChild(document.createTextNode(`Адрес: ${atp.tags['addr:street_address']}`));
+	}
 	if(tags.value != '') {
 		popup.appendChild(tags);
 	}
