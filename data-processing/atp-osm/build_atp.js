@@ -22,7 +22,13 @@ function preprocess_atp_data(data) {
 }
 
 async function fetch_atp_data(spider, run) {
-	const response = await fetch(`${configs.atp_url}/runs/${run}/output/${spider}.geojson`);
+	let response;
+	if(spider.startsWith('https')) {
+		response = await fetch(spider);
+	}
+	else {
+		response = await fetch(`${configs.atp_url}/runs/${run}/output/${spider}.geojson`);
+	}
 	const data = await response.json();
 	return preprocess_atp_data(data);
 }
@@ -30,12 +36,12 @@ async function fetch_atp_data(spider, run) {
 export async function populate_atp_cache(spiders, atp_cache) {
     const last_run = await get_last_atp_run();
 	let promises = [];
-	spiders.forEach(({atp_spider}, index) => {
+	spiders.forEach(({atp_spider, spider_url}, index) => {
 		const promise = new Promise(resolve => setTimeout(async () => {
 			console.log(`Fetching ATP data for ${atp_spider}`);
 			if(!atp_cache[atp_spider]) {
 				try {
-					atp_cache[atp_spider] = await fetch_atp_data(atp_spider, last_run);
+					atp_cache[atp_spider] = await fetch_atp_data(spider_url?spider_url:atp_spider, last_run);
 				}
 				catch(error) {
 					console.error(atp_spider, error);
