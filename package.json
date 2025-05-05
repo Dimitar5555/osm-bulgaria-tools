@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-atp-osm": "node ./data-processing/atp-osm/build.js",
     "build-motorway-milestones": "node ./data-processing/motorway-milestones/build.js",
-    "start": "parcel $npm_package_config_parcel_paths",
+    "dev": "parcel serve $npm_package_config_parcel_paths",
     "build": "parcel build $npm_package_config_parcel_paths",
     "build-github": "parcel build $npm_package_config_parcel_paths --public-url $npm_package_config_homepage"
   },
