@@ -14,6 +14,8 @@ function fetch_milestones_for_motorway(motorway) {
     const query = '('
     + `  way["highway"="motorway"][name="${configs.motorway_prefix} ${motorway.name}"];`
     + '  >>;'
+    + `  way["highway"="construction"]["construction"="motorway"][name="${configs.motorway_prefix} ${motorway.name}"];`
+    + '  >>;'
     + ') -> .motorway_nodes;'
     + 'node.motorway_nodes["highway"="milestone"] -> .milestones;'
     + '.milestones out geom;';
